@@ -1,7 +1,12 @@
-const SimpleStorage = artifacts.require("SimpleStorage");
+const RewardToken = artifacts.require("RewardToken");
 const Staking = artifacts.require("Staking");
 
 module.exports = function (deployer) {
-  deployer.deploy(SimpleStorage);
-  deployer.deploy(Staking);
+  deployer.deploy(RewardToken);
+  deployer.deploy(Staking, RewardToken.address,RewardToken.address);
 };
+
+
+// module.exports = function (deployer) {
+//   deployer.deploy(SimpleStorage, value_01, value_02);
+// };

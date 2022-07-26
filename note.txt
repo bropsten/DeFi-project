@@ -1,0 +1,25 @@
+INFO
+
+- IERC20 is the light version of ERC20, allow to call empty function
+
+- we use s_ as variable prefix to indicate that is a stored variable and it will be
+expensive to read and write
+
+- require(succes, "Failed"); is really gas expensive cause failed is a string
+ revert Staking__TransferFailed(); is better than require, it revert with a custom error code
+
+ - require doit etre au debut et revert peut etre a la fin car il revert tout ce qui s'est passé au préalable
+
+ - on pourrait importer que les fonctin que l'on souhaite de IERC20 pour économiser du Gas
+ 
+ -external is littme cheaper than public
+
+
+
+ QUESTION
+ 
+ - La fonction Staking devrait être payable non ?
+
+ - Est ce que les fct ERC20 ont besoin de payable ? non a priori (c'est pas des ether)
+
+ - uint256 public constant REWARD_RATE = 100; constant pour ne pas changer la valeur c'est ca ?
