@@ -6,11 +6,17 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.1",
     "@truffle/hdwallet-provider": "^2.0.10",
-    "dotenv": "^16.0.1"
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "dotenv": "^16.0.1",
+    "solc": "0.8.15",
+    "solidity-coverage": "0.7.17"
   },
   "scripts": {
     "test": "truffle test"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eth-gas-reporter": "^0.2.25"
+  }
 }

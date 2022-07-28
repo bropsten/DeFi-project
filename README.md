@@ -20,6 +20,8 @@ ___
 git clone git@github.com:bropsten/DeFi-project.git
 ```
 
+Staking : Locking tokens to net rewards
+
 ## Installation des librairies
 ```bash
 cd truffle 
