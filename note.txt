@@ -17,8 +17,11 @@ expensive to read and write
 
 
  QUESTION
- 
- - La fonction Staking devrait être payable non ?
+
+ - IERC20 public s_stakingToken; est ce que c'est un objet ?
+
+ - A mieux définir mapping(address => uint256) public s_userRewardPerTokenPaid;
+
 
  - Est ce que les fct ERC20 ont besoin de payable ? non a priori (c'est pas des ether)
 

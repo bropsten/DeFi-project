@@ -1,136 +1,135 @@
 // SPDX-License-Identifier: MIT
+// Inspired by https://solidity-by-example.org/defi/staking-rewards/
+pragma solidity ^0.8.7;
 
-// Claim : User will be able to stake some token and lock token in the smart contract
-// Withdraw : User will be able to unlock token and withdraw tokens
-// ClaimReward : User will be able to claim the staking rewards
-
+import "../node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-pragma solidity 0.8.14;
+error TransferFailed();
+error NeedsMoreThanZero();
 
-error Staking__TransferFailed();
-error Staking__NeedsMoreThanZero();
+contract Staking is ReentrancyGuard {
+    IERC20 public s_rewardsToken;
+    IERC20 public s_stakingToken;
 
+    // This is the reward token per second
+    // Which will be multiplied by the tokens the user staked divided by the total
+    // This ensures a steady reward rate of the platform
+    // So the more users stake, the less for everyone who is staking.
+    uint256 public constant REWARD_RATE = 100;
+    uint256 public s_lastUpdateTime;
+    uint256 public s_rewardPerTokenStored;
 
-contract Staking {
-
-    // s_ cause it's a stored variable => it's expensive to read and write
-    IERC20 public s_stakingToken; 
-
-    IERC20 public s_rewardToken; 
-
-    // someone address -> how much they staked
-    mapping(address => uint256) public s_balances;
-
-   // a mapping of how much rewards each address has to claim
+    mapping(address => uint256) public s_userRewardPerTokenPaid;
     mapping(address => uint256) public s_rewards;
 
-    // a mapping of how much each address has been paid
-    mapping(address => uint256) public s_userRewardPerTokenPaid;
+    uint256 private s_totalSupply;
+    mapping(address => uint256) public s_balances;
 
+    event Staked(address indexed user, uint256 indexed amount);
+    event WithdrewStake(address indexed user, uint256 indexed amount);
+    event RewardsClaimed(address indexed user, uint256 indexed amount);
 
-
-    // We keep track of the total supply
-
-    uint256 public constant REWARD_RATE = 100;
-    uint256 public s_totalSupply ; 
-    uint256 public s_rewardPerTokenStored;
-    uint256 public s_lastUpdateTime;
-
-    modifier updateReward(address _account) {
-        //how much reward per token
-        // last timestamp
-        s_rewardPerTokenStored  = rewardPerToken();
-        s_lastUpdateTime = block.timestamp;
-        s_rewards[_account] = earned(_account);
-        s_userRewardPerTokenPaid[_account] = s_rewardPerTokenStored;
-
-        _;
+    constructor(address stakingToken, address rewardsToken) {
+        s_stakingToken = IERC20(stakingToken);
+        s_rewardsToken = IERC20(rewardsToken);
     }
 
-    modifier moreThanZero(uint256 _amount){
-        if (_amount == 0){
-            revert Staking__NeedsMoreThanZero();
-        }
-        _;
-    }
-
-
-    constructor(address _stakingToken, address _rewardToken){
-        s_stakingToken = IERC20(_stakingToken);
-        s_rewardToken = IERC20(_rewardToken);
-    }
-
-    function earned(address _account) public view returns (uint256){
-        uint256 currentBalance = s_balances[_account];
-        uint256 amountPaid = s_userRewardPerTokenPaid[_account];
-        uint256 currentRewardPerToken = rewardPerToken();
-        uint256 pastRewards = s_rewards[_account];
-
-        uint256 _earned = ((currentBalance * (currentRewardPerToken - amountPaid))/ 1e18) + pastRewards;
-        return _earned;
-    }
-
-    function rewardPerToken() public view returns(uint256){
-        if (s_totalSupply == 0){
+    /**
+     * @notice How much reward a token gets based on how long it's been in and during which "snapshots"
+     */
+    function rewardPerToken() public view returns (uint256) {
+        if (s_totalSupply == 0) {
             return s_rewardPerTokenStored;
         }
-        return s_rewardPerTokenStored + 
-        (((block.timestamp - s_lastUpdateTime)*REWARD_RATE*1e18)/s_totalSupply);
-
+        return
+            s_rewardPerTokenStored +
+            (((block.timestamp - s_lastUpdateTime) * REWARD_RATE * 1e18) / s_totalSupply);
     }
 
-    // Do we allow any token
-    // or specific token 
-    // We will need Chainlink to know the exchange price
-
-    function stake(uint256 _amount) external updateReward(msg.sender) moreThanZero(_amount) {
-        
-        // transfer the token to this contract
-        // we credit and store in the mapping the staked amount
-        s_balances[msg.sender] = s_balances[msg.sender] + _amount ; 
-        s_totalSupply  = s_totalSupply + _amount;
-        //emit event
-
-        bool success = s_stakingToken.transferFrom(msg.sender, address(this) , _amount);
-
-        // require(succes, "Failed");
-
-        if(!success){
-            revert Staking__TransferFailed();
-        }
-        
+    /**
+     * @notice How much reward a user has earned
+     */
+    function earned(address account) public view returns (uint256) {
+        return
+            ((s_balances[account] * (rewardPerToken() - s_userRewardPerTokenPaid[account])) /
+                1e18) + s_rewards[account];
     }
 
-    function withdraw(uint256 _amount )external updateReward(msg.sender) moreThanZero(_amount){
-
-        s_balances[msg.sender]=s_balances[msg.sender] - _amount;
-
-        s_totalSupply  = s_totalSupply - _amount;
-
-        bool success = s_stakingToken.transfer( msg.sender , _amount);
-
-        if(!success){
-            revert Staking__TransferFailed();
+    /**
+     * @notice Deposit tokens into this contract
+     * @param amount | How much to stake
+     */
+    function stake(uint256 amount)
+        external
+        updateReward(msg.sender)
+        nonReentrant
+        moreThanZero(amount)
+    {
+        s_totalSupply += amount;
+        s_balances[msg.sender] += amount;
+        emit Staked(msg.sender, amount);
+        bool success = s_stakingToken.transferFrom(msg.sender, address(this), amount);
+        if (!success) {
+            revert TransferFailed();
         }
     }
 
-    function claimReward() external updateReward(msg.sender) {
+    /**
+     * @notice Withdraw tokens from this contract
+     * @param amount | How much to withdraw
+     */
+    function withdraw(uint256 amount) external updateReward(msg.sender) nonReentrant {
+        s_totalSupply -= amount;
+        s_balances[msg.sender] -= amount;
+        emit WithdrewStake(msg.sender, amount);
+        bool success = s_stakingToken.transfer(msg.sender, amount);
+        if (!success) {
+            revert TransferFailed();
+        }
+    }
 
+    /**
+     * @notice User claims their tokens
+     */
+    function claimReward() external updateReward(msg.sender) nonReentrant {
         uint256 reward = s_rewards[msg.sender];
-
-        bool success = s_rewardToken.transfer(msg.sender, reward);
-
-        if (!success){
-            revert Staking__TransferFailed();
+        s_rewards[msg.sender] = 0;
+        emit RewardsClaimed(msg.sender, reward);
+        bool success = s_rewardsToken.transfer(msg.sender, reward);
+        if (!success) {
+            revert TransferFailed();
         }
-
-        //how much reward do they get
-        // token will emit x token / sec
-
     }
 
-   
+    /********************/
+    /* Modifiers Functions */
+    /********************/
+    modifier updateReward(address account) {
+        // update reward per token store on each staking witdraw or claim fct
+        s_rewardPerTokenStored = rewardPerToken();
 
+        s_lastUpdateTime = block.timestamp;
+        
+        s_rewards[account] = earned(account);
+        s_userRewardPerTokenPaid[account] = s_rewardPerTokenStored;
+        _;
+    }
 
+    modifier moreThanZero(uint256 amount) {
+        if (amount == 0) {
+            revert NeedsMoreThanZero();
+        }
+        _;
+    }
+
+    /********************/
+    /* Getter Functions */
+    /********************/
+    // Ideally, we'd have getter functions for all our s_ variables we want exposed, and set them all to private.
+    // But, for the purpose of this demo, we've left them public for simplicity.
+
+    function getStaked(address account) public view returns (uint256) {
+        return s_balances[account];
+    }
 }
