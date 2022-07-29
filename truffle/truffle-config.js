@@ -68,9 +68,9 @@ module.exports = {
     },
   },
 
-  plugins: [
+  /*plugins: [
     "solidity-coverage"
-  ],
+  ],*/
 
   // Configure your compilers
   compilers: {
