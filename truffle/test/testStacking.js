@@ -52,6 +52,36 @@ contract('staking', accounts =>{
 
     });
 
+    describe("Test de la fonction stake", function(){
+        let _stakeAm,_rewardAddr;   
+        _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
+
+        beforeEach(async function () {
+            rewardInstance = await reward.new({from : owner});
+            _rewardAddr = rewardInstance.address;
+            stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
+            await rewardInstance.approve(stakingInstance.address,_stakeAm);
+            await stakingInstance.stake(_stakeAm,{from : owner});
+        });
+
+        it('Should the function stake with success the amount', async () => {
+            const storedata = await stakingInstance.s_totalSupply({from : owner});
+            console.log(storedata);
+            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (1000));
+        });
+
+        it('Should the staking of user had growth from 1000', async () => {
+            const storedata = await stakingInstance.s_balances(owner,{from : owner});
+            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (1000));
+        });
+
+        it('Should emit address & amount of the staking', async () => {
+            await rewardInstance.approve(stakingInstance.address,(_stakeAm));
+            expectEvent(await stakingInstance.stake(_stakeAm, {from : owner}), 'Staked',{user : owner, amount : _stakeAm});
+        });
+
+    });
+
     
 
 });
