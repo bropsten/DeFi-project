@@ -6,6 +6,7 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Staking {
     IERC20 public stakingToken;
+    IERC20 public rewardToken;
 
     uint256 private totalSupply;
     uint256 private rewardPerTokenStored;
@@ -25,8 +26,9 @@ contract Staking {
     mapping(address => uint256) public balances;
     mapping(address => LockedStaking) public lockedBalances;
 
-    constructor(address _stakingToken) {
+    constructor(address _stakingToken, address _rewardToken) {
         stakingToken = IERC20(_stakingToken);
+        rewardToken = IERC20(_rewardToken);
     }
 
     /**
