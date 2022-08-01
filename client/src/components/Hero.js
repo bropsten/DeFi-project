@@ -1,10 +1,10 @@
 import HeroPics from "../images/on_chain.png"
-import useWeb3 from '../hooks/useWeb3'
+import useMeta from '../hooks/useMeta'
 
 
 export default function Hero() {
 
-  const {connectToMetaMask} = useWeb3();
+  const {connectToMetaMask} = useMeta();
 
   return (
       
