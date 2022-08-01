@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
+import useWeb3 from "./useWeb3";
 
 
 function useMeta() {
 
     const [account, setAccount] = useState(null);
+    const { web3 } = useWeb3();
 
 
 
@@ -19,7 +21,7 @@ function useMeta() {
 
         ethereum.on("chainChanged", () => location.reload());
 
-        ethereum.on('accountsChanged', (accounts: string[]) => {
+        ethereum.on('accountsChanged', (accounts) => {
             if (accounts.length > 0) {
                 setAccount(accounts[0]);
             } else {
@@ -39,7 +41,7 @@ function useMeta() {
             setAccount(ethereum.selectedAddress)
         }
 
-    }, []);
+    }, [web3, account]);
 
     // fct connect au Metamask
     const connectToMetaMask = useCallback(async () => {

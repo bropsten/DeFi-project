@@ -22,19 +22,20 @@ function App() {
   return (
 
     <>
-        
-        {isConnected ? <Dashboard account={account} contract={contract} /> : 
 
-          <div className="App">
-            <PreHeader />
-            <Hero />
-            <Team />
-            <Partners />
-            <Contacts />
-            <Footer />
-          </div>
-  
-        }
+        
+      {isConnected ? <Dashboard account={account} contract={contract} /> : 
+
+        <div className="App">
+          <PreHeader />
+          <Hero />
+          <Team />
+          <Partners />
+          <Contacts />
+          <Footer />
+        </div>
+
+      }
     
       
        
