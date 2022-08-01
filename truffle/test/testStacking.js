@@ -3,7 +3,7 @@ const reward = artifacts.require("./RewardToken.sol");
 const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { assertion } = require('@openzeppelin/test-helpers/src/expectRevert');
 const { expect } = require('chai');
-const Web3 = require ('Web3');
+const Web3 = require ('web3');
 
 contract('staking', accounts =>{
 
