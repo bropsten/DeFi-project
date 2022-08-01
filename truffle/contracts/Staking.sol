@@ -24,6 +24,8 @@ contract Staking {
     event WithdrawStake(address user, uint256 amount);
 
     mapping(address => uint256) public balances;
+    mapping(address => uint256) public userRewardPerTokenPaid;
+    mapping(address => uint256) public rewardsBalance;
     mapping(address => LockedStaking) public lockedBalances;
 
     constructor(address _stakingToken, address _rewardsToken) {
@@ -84,11 +86,10 @@ contract Staking {
     /**
      * @notice Calculate the reward for each staked token
      */
-    function rewardPerToken() external view returns (uint256) {
+    function rewardPerToken() public view returns (uint256) {
         if (totalSupply == 0) {
             return rewardPerTokenStored;
         }
-
         return
             rewardPerTokenStored +
             (((block.timestamp - lastUpdateTime) * REWARD_RATE * 1e18) / totalSupply);
@@ -97,18 +98,9 @@ contract Staking {
     /**
      * @notice How much reward did a user get
      */
-    function earned(address _account, bool _locked) external returns (uint256) {
-        
-    }
-
-    /**
-     * @notice Return the staking token address
-     */
-    function getStakingToken() external view returns (address) {
-        return address(stakingToken);
-    }
-
-    function getrewardsToken() external view returns (address) {
-        return address(rewardsToken);
+    function earned(address _account, bool _locked) external view returns (uint256) {
+        return
+            ((balances[_account] * (rewardPerToken() - userRewardPerTokenPaid[_account])) /
+                1e18) + rewardsBalance[_account];
     }
 }
