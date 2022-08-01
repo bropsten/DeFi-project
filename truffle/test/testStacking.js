@@ -127,11 +127,19 @@ contract('staking', accounts =>{
             await rewardInstance.approve(stakingInstance.address,_stakeAm);
             await stakingInstance.stake(_stakeAm,{from : owner});
         });
-
+        //A refaire car soucis avec cette fonction
         it('Sould return the number of token earned', async () => {
             const storedata = await stakingInstance.earned(owner,{from : owner});
             expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.equal(new BN (1000));
         });
+        //Test de la fonction rewardPerToken à terminer 
+        it('Should rewardPerToken test', async () => {
+            const storedata = await stakingInstance.s_balances(owner,{from : owner});
+            await stakingInstance.withdraw(storedata, {from : owner})
+            expect()
+        });
     });
+
+
 
 });
