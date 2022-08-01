@@ -7,26 +7,23 @@ import Contacts from './components/Contact';
 import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
 import useMeta from './hooks/useMeta';
-import useWeb3 from './hooks/useWeb3';
+import useContract from "./hooks/useContract";
 
 
 
 function App() {
 
   const {account} = useMeta(); 
-  const {web3} = useWeb3();
   const isConnected = !!account;
-  
-  console.log(account);
-  console.log(web3);
-  
+  const {contract} = useContract();
+
 
 
   return (
 
     <>
         
-        {isConnected ? <Dashboard account={account} /> : 
+        {isConnected ? <Dashboard account={account} contract={contract} /> : 
 
           <div className="App">
             <PreHeader />

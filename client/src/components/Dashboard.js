@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 import Staking from './Staking'
 import { Dialog, Menu, Transition } from '@headlessui/react'
 
+
 import {
   BellIcon,
   ChartBarIcon,
@@ -28,20 +29,15 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Dashboard({account}) {
+export default function Dashboard({account, contract}) {
+
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  console.log(contract);
 
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog as="div" className="relative z-40 md:hidden" onClose={setSidebarOpen}>
