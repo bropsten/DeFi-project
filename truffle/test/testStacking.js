@@ -13,6 +13,7 @@ contract('staking', accounts =>{
 
     let stakingInstance;
     let rewardInstance;
+    let _stakeAm,_rewardAddr; 
 
     /* :::::::::::::::::::::::::::::::::::: Test de la Fonction stake ::::::::::::::::::::::::::::::*/
 
@@ -52,8 +53,7 @@ contract('staking', accounts =>{
 
     });
 
-    describe("Test de la fonction stake", function(){
-        let _stakeAm,_rewardAddr;   
+    describe("Test de la fonction stake", function(){ 
         _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
 
         beforeEach(async function () {
@@ -79,9 +79,41 @@ contract('staking', accounts =>{
             await rewardInstance.approve(stakingInstance.address,(_stakeAm));
             expectEvent(await stakingInstance.stake(_stakeAm, {from : owner}), 'Staked',{user : owner, amount : _stakeAm});
         });
+        /* Voir pour traiter les error si possible sinon laisser de côté
+        it('Should revert error TransferFailed', async () => { 
+            await expectRevert(stakingInstance.TransferFailed("",{from : owner}));
+
+        });*/
 
     });
 
-    
+    describe("Test de la fonction withdraw", function(){ 
+        _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
+
+        beforeEach(async function (){
+            rewardInstance = await reward.new({from : owner});
+            _rewardAddr = rewardInstance.address;
+            stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
+            await rewardInstance.approve(stakingInstance.address,_stakeAm);
+            await stakingInstance.stake(_stakeAm,{from : owner});
+            await stakingInstance.withdraw(web3.utils.toWei("500","ether"));
+        });
+
+        it('Should the function can wtihdraw', async () => {
+            const storedata = await stakingInstance.s_totalSupply({from : owner});
+            console.log(storedata);
+            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (500));
+        });
+
+        it('Should the staking of user have decreasing from 500', async () => {
+            const storedata = await stakingInstance.s_balances(owner,{from : owner});
+            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (500));
+        });
+
+        it('Should emit address & amount of the withdraw', async () => {
+            const storedata = await stakingInstance.s_balances(owner,{from : owner});
+            expectEvent(await stakingInstance.withdraw(storedata, {from : owner}), 'WithdrewStake',{user : owner, amount : storedata});
+        });
+    });
 
 });
