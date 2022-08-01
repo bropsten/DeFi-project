@@ -80,13 +80,14 @@ contract('staking', accounts =>{
             expectEvent(await stakingInstance.stake(_stakeAm, {from : owner}), 'Staked',{user : owner, amount : _stakeAm});
         });
         /* Voir pour traiter les error si possible sinon laisser de côté
+
         it('Should revert error TransferFailed', async () => { 
             await expectRevert(stakingInstance.TransferFailed("",{from : owner}));
 
         });*/
 
     });
-
+/* :::::::::::::::::::::::::::::::::::: Test de la Fonction withdraw ::::::::::::::::::::::::::::::*/
     describe("Test de la fonction withdraw", function(){ 
         _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
 
@@ -113,6 +114,23 @@ contract('staking', accounts =>{
         it('Should emit address & amount of the withdraw', async () => {
             const storedata = await stakingInstance.s_balances(owner,{from : owner});
             expectEvent(await stakingInstance.withdraw(storedata, {from : owner}), 'WithdrewStake',{user : owner, amount : storedata});
+        });
+    });
+
+    /* :::::::::::::::::::::::::::::::::::: Test de la Fonction earned ::::::::::::::::::::::::::::::*/
+    describe("Test de la fonction Earned", function() {
+        _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
+        beforeEach(async function (){
+            rewardInstance = await reward.new({from : owner});
+            _rewardAddr = rewardInstance.address;
+            stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
+            await rewardInstance.approve(stakingInstance.address,_stakeAm);
+            await stakingInstance.stake(_stakeAm,{from : owner});
+        });
+
+        it('Sould return the number of token earned', async () => {
+            const storedata = await stakingInstance.earned(owner,{from : owner});
+            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.equal(new BN (1000));
         });
     });
 
