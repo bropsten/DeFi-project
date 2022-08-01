@@ -1,6 +1,25 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
+import React, { useState} from "react";
+
+
 
 export default function Staking() {
+
+    const [amountToStake, setAmountToStake] = useState(0);
+    
+    async function addStaking(){
+
+      const element = document.getElementById("stake");
+      const amountToStake = element.value;
+      console.log(amountToStake);
+
+      setAmountToStake(amountToStake);
+   
+      element.value = "";
+  }
+  
+
+
   return (
     <>
       <div className="max-w-7xl mx-auto mb-10 ">
@@ -11,7 +30,7 @@ export default function Staking() {
         <div className="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
           <div>
             <ul className="mt-1 max-w-2xl text-blue-sm text-gray-500">
-              <li>Your account adress : </li>
+              <li>Your account adress : {amountToStake}</li>
               <li>Your staking balance : </li>
               <li>Your staking reward : </li>
               <li>Your Locking Time : </li>
@@ -74,8 +93,8 @@ export default function Staking() {
               </label>
               <input
                 type="text"
-                name="price"
-                id="price"
+                name="stake"
+                id="stake"
                 className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
                 placeholder="0.00"
                 aria-describedby="price-currency"
@@ -83,6 +102,7 @@ export default function Staking() {
             </div>
             <button
               type="submit"
+              onClick = {addStaking}
               className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               STAKE
