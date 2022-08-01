@@ -1,7 +1,7 @@
 # Projet 4 - DApp de staking
 
 ### Objectifs
-- [ ] Staker un ou plusieurs ERC20 dans des pools de cet ERC20
+- [x] Staker un ou plusieurs ERC20 dans des pools de cet ERC20
 - [ ] ERC20 préexistants (valeur existante face à ETH ou USDC) ou créés pour l'occasion (faucet)
 - [x] Unstake de ses tokens (avec ou sans condition de temps, en partie ou totalité)
 - [x] Générer une récompense (via un token de récompense, de l'ETH ou autre token)

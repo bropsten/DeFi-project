@@ -23,7 +23,7 @@ contract Staking is ReentrancyGuard {
     mapping(address => uint256) public s_userRewardPerTokenPaid;
     mapping(address => uint256) public s_rewards;
 
-    uint256 private s_totalSupply;
+    uint256 public s_totalSupply;
     mapping(address => uint256) public s_balances;
 
     event Staked(address indexed user, uint256 indexed amount);
@@ -46,7 +46,8 @@ contract Staking is ReentrancyGuard {
             s_rewardPerTokenStored +
             (((block.timestamp - s_lastUpdateTime) * REWARD_RATE * 1e18) / s_totalSupply);
     }
-
+    
+    
     /**
      * @notice How much reward a user has earned
      */
