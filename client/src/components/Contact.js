@@ -145,7 +145,7 @@ export default function Contacts() {
               </dl>
               <ul  className="mt-8 flex space-x-12">
                 <li>
-                  <a className="text-indigo-200 hover:text-indigo-100" href="" >
+                  <a className="text-indigo-200 hover:text-indigo-100" href="akumaw.fr" >
                     <span className="sr-only">Facebook</span>
                     <svg
                       width={24}
@@ -164,7 +164,7 @@ export default function Contacts() {
                   </a>
                 </li>
                 <li>
-                  <a className="text-indigo-200 hover:text-indigo-100" href="">
+                  <a className="text-indigo-200 hover:text-indigo-100" href="akumaw.fr">
                     <span className="sr-only">GitHub</span>
                     <svg
                       width={24}
@@ -183,7 +183,7 @@ export default function Contacts() {
                   </a>
                 </li>
                 <li>
-                  <a className="text-indigo-200 hover:text-indigo-100" href="">
+                  <a className="text-indigo-200 hover:text-indigo-100" href="akumaw.fr">
                     <span className="sr-only">Twitter</span>
                     <svg
                       width={24}

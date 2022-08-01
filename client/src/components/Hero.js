@@ -1,9 +1,13 @@
 import HeroPics from "../images/on_chain.png"
+import useWeb3 from '../hooks/useWeb3'
 
-export default function Example() {
+
+export default function Hero() {
+
+  const {connectToMetaMask} = useWeb3();
+
   return (
-  
-
+      
       <main className="lg:relative">
         <div className="mx-auto max-w-7xl w-full pt-16 pb-20 text-center lg:py-48 lg:text-left">
           <div className="px-4 lg:w-1/2 sm:px-8 xl:pr-16">
@@ -14,11 +18,13 @@ export default function Example() {
             <p className="mt-3 max-w-md mx-auto text-lg text-gray-500 sm:text-xl md:mt-5 md:max-w-3xl">
               Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
               fugiat veniam occaecat fugiat aliqua.
+
             </p>
             <div className="mt-10 sm:flex sm:justify-center lg:justify-start">
               <div className="rounded-md shadow">
                 <button
-         
+                type="button"
+                onClick={connectToMetaMask}
                   className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
                 >
                   Launch App
