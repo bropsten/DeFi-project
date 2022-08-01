@@ -6,16 +6,18 @@ import Partners from './components/Partners';
 import Contacts from './components/Contact';
 import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
+import useMeta from './hooks/useMeta';
 import useWeb3 from './hooks/useWeb3';
 
 
 
 function App() {
 
-  const {account, web3} = useWeb3(); 
+  const {account} = useMeta(); 
+  const {web3} = useWeb3();
   const isConnected = !!account;
+  
   console.log(account);
-
   console.log(web3);
   
 
