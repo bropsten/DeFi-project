@@ -6,8 +6,9 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Staking {
     IERC20 public stakingToken;
+    IERC20 public rewardsToken;
 
-    uint256 private totalSupply;
+    uint256 public totalSupply;
     uint256 private rewardPerTokenStored;
     uint256 private lastUpdateTime;
     uint256 private lockedTime = 4 weeks;
@@ -20,13 +21,14 @@ contract Staking {
     }
 
     event Stake(address user, uint256 amount);
-    event Withdraw(address user, uint256 amount);
+    event WithdrawStake(address user, uint256 amount);
 
     mapping(address => uint256) public balances;
     mapping(address => LockedStaking) public lockedBalances;
 
-    constructor(address _stakingToken) {
+    constructor(address _stakingToken, address _rewardsToken) {
         stakingToken = IERC20(_stakingToken);
+        rewardsToken = IERC20(_rewardsToken);
     }
 
     /**
@@ -58,7 +60,7 @@ contract Staking {
         require(balances[msg.sender] >= _amount, "Balance need to be more than 0");
         totalSupply -= _amount;
         balances[msg.sender] -= _amount;
-        emit Withdraw(msg.sender, _amount);
+        emit WithdrawStake(msg.sender, _amount);
         bool success = stakingToken.transfer(msg.sender, _amount);
         require(success, "Transfer failed");
     }
@@ -74,7 +76,7 @@ contract Staking {
         totalSupply -= amount;
         lockedBalances[msg.sender].balance = 0;
         lockedBalances[msg.sender].deadline = 0;
-        emit Withdraw(msg.sender, amount);
+        emit WithdrawStake(msg.sender, amount);
         bool success = stakingToken.transfer(msg.sender, amount);
         require(success, "Transfer failed");
     }
@@ -97,5 +99,16 @@ contract Staking {
      */
     function earned(address _account, bool _locked) external returns (uint256) {
         
+    }
+
+    /**
+     * @notice Return the staking token address
+     */
+    function getStakingToken() external view returns (address) {
+        return address(stakingToken);
+    }
+
+    function getrewardsToken() external view returns (address) {
+        return address(rewardsToken);
     }
 }
