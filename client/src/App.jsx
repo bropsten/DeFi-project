@@ -16,13 +16,11 @@ function App() {
   const {account} = useMeta(); 
   const isConnected = !!account;
   const {contract} = useContract();
-
-
+  
 
   return (
 
     <>
-
         
       {isConnected ? <Dashboard account={account} contract={contract} /> : 
 

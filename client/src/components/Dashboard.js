@@ -33,8 +33,6 @@ export default function Dashboard({account, contract}) {
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  console.log(contract);
-
 
   return (
     <>
@@ -223,7 +221,7 @@ export default function Dashboard({account, contract}) {
           <main className="flex-1">
 
               <div className="mt-10 max-w-2xl px-4 sm:px-6 md:px-8">
-              <Staking /> 
+              <Staking contract={contract} account={account}/> 
               </div>
            
           </main>
