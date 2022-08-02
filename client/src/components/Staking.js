@@ -12,102 +12,133 @@ export default function Staking({contract, account}) {
   const [userStakingReward, setUserStakingReward] = useState(0);
   const [broTokenAddress, setBroTokenAddress] = useState('');
 
+  const [userStakedBalance, setUserStakedBalance] = useState(0);
+  const [userRewardBalance, setUserRewardBalance] = useState(0);
+
   useEffect(() => {
     if( ! contract ){
       return;
     }
 
     setBroTokenAddress(contract.BROToken._address);
+    updateInfos();
 
-    async function getUserTokenStaked() {
-      let userTokenStaked = await contract.staking.methods.balances(account).call();
-      console.log(userTokenStaked);
-      userTokenStaked = web3.utils.fromWei(userTokenStaked, 'ether');
+    // async function getUserTokenStaked() {
+    //   let userTokenStaked = await contract.staking.methods.balances(account).call();
+    //   console.log(userTokenStaked);
+    //   userTokenStaked = web3.utils.fromWei(userTokenStaked, 'ether');
       
-      // we get all event
-      const pastTokenStake = await contract.staking.getPastEvents('Stake', { fromBlock: 0, toBlock: 'latest' });
-      console.log(pastTokenStake);
+    //   // we get all event
+    //   const pastTokenStake = await contract.staking.getPastEvents('Stake', { fromBlock: 0, toBlock: 'latest' });
+    //   console.log(pastTokenStake);
 
-      // we get all the ammount staked by the user
-      const pastTokenStakeBalance = pastTokenStake.map(event => {
-        return event.returnValues.amount;
-      });
-      console.log(pastTokenStakeBalance);
+    //   // we get all the ammount staked by the user
+    //   const pastTokenStakeBalance = pastTokenStake.map(event => {
+    //     return event.returnValues.amount;
+    //   });
+    //   console.log(pastTokenStakeBalance);
 
-      let totalBalanceUserStaked = 0;
+    //   let totalBalanceUserStaked = 0;
 
-      pastTokenStakeBalance.forEach((value, i) => {
-        totalBalanceUserStaked += parseFloat(value);
+    //   pastTokenStakeBalance.forEach((value, i) => {
+    //     totalBalanceUserStaked += parseFloat(value);
         
-      });
+    //   });
 
-      totalBalanceUserStaked = new BigNumber(totalBalanceUserStaked).toFixed(0);
-      totalBalanceUserStaked = web3.utils.fromWei(totalBalanceUserStaked, 'ether');
-      setUserTokenStaked(totalBalanceUserStaked);
+    //   totalBalanceUserStaked = new BigNumber(totalBalanceUserStaked).toFixed(0);
+    //   totalBalanceUserStaked = web3.utils.fromWei(totalBalanceUserStaked, 'ether');
+    //   setUserTokenStaked(totalBalanceUserStaked);
 
-    }
+    // }
 
-    async function getYourOwnBalance() {
-      let balance = await contract.BROToken.methods.balanceOf(account).call();
-      balance =  web3.utils.fromWei(balance, 'ether');
-      console.log(balance);
-      setContractBalance(balance);
-    }
+    // async function getYourOwnBalance() {
+    //   let balance = await contract.BROToken.methods.balanceOf(account).call();
+    //   balance =  web3.utils.fromWei(balance, 'ether');
+    //   console.log(balance);
+    //   setContractBalance(balance);
+    // }
 
-    async function getTotalSupply() {
-      let totalSupply = await contract.staking.methods.totalSupply().call();
-      totalSupply = web3.utils.fromWei(totalSupply, 'ether');
-      console.log(totalSupply);
-      setTotalSupply(totalSupply);
-    }
+    // async function getTotalSupply() {
+    //   let totalSupply = await contract.staking.methods.totalSupply().call();
+    //   totalSupply = web3.utils.fromWei(totalSupply, 'ether');
+    //   console.log(totalSupply);
+    //   setTotalSupply(totalSupply);
+    // }
 
 
-    async function getUserStakingReward() {
-      let userStakingReward = await contract.staking.methods.rewardsBalance(account).call();
-      userStakingReward = web3.utils.fromWei(userStakingReward, 'ether');
-      console.log(userStakingReward);
-      setUserStakingReward(userStakingReward);
-    }
+    // async function getUserStakingReward() {
+    //   let userStakingReward = await contract.staking.methods.rewardsBalance(account).call();
+    //   userStakingReward = web3.utils.fromWei(userStakingReward, 'ether');
+    //   console.log(userStakingReward);
+    //   setUserStakingReward(userStakingReward);
+    // }
 
-    getUserStakingReward();
-    getUserTokenStaked();
-    getTotalSupply()
-    getYourOwnBalance()
+    // getUserStakingReward();
+    // getUserTokenStaked();
+    // getTotalSupply()
+    // getYourOwnBalance()
 }, [contract, account]);
 
+  async function getUserStakedBalance() {
+    const stakedBalance = await contract.staking.methods.getStakedBalance(account).call();
+    console.log("staked balance (wei)", stakedBalance);
+    setUserStakedBalance(convertFromWei(stakedBalance));
+  }
+
+  async function getUserRewardBalance() {
+    const rewardBalance = await contract.BROToken.methods.balanceOf(account).call();
+    console.log("reward balance (wei)", rewardBalance);
+    setUserRewardBalance(convertFromWei(rewardBalance));
+  }
+
+  async function getTotalSupply() {
+    let totalSupply = await contract.staking.methods.totalSupply().call();
+    console.log("totalSupply (wei)", totalSupply);
+    setTotalSupply(convertFromWei(totalSupply));
+  }
+
+  function updateInfos() {
+    getUserStakedBalance();
+    getUserRewardBalance();
+    getTotalSupply();
+  }
+  
+  function convertFromWei(value) {
+    return web3.utils.fromWei(value, "ether");
+  }
+
+  function convertToWei(value) {
+    return web3.utils.toWei(value, "ether");
+  }
 
   async function addStaking(){
     const element = document.getElementById("stake");
-    const amountToStake = element.value;
-    let transactionAddStaking;
-
-    const checkBox = document.getElementById("lockedTime");
-    const checkBoxTickOrNot = checkBox.checked.toString();
-    console.log(checkBoxTickOrNot);
-
-    try {
-      let approve = await contract.BROToken.methods.approve(contract.staking._address, amountToStake).send({ from: account });
-      console.log(approve)
-      transactionAddStaking = await contract.staking.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
-      console.log(transactionAddStaking);
-      
-    }catch(err){
-      console.log(err);
-    }
-
+    const value = element.value;
     element.value = "";
+
+    if (value != "") {
+      const amountToStake = convertToWei(value);
+      const checkBox = document.getElementById("lockedTime");
+      const checkBoxTickOrNot = checkBox.checked.toString();
+      
+      try {
+        await contract.BROToken.methods.approve(contract.staking._address, amountToStake).send({ from: account });
+        await contract.staking.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
+        updateInfos();
+      }catch(err){
+        console.error("stake amount", EvalError);
+      }
+    }
   }
 
   async function mint() {
     try {
-      let transaction = await contract.BROToken.methods.faucet(account).send({from: account});
-      console.log(transaction);
+      await contract.BROToken.methods.faucet(account).send({from: account});
+      updateInfos();
     }catch(err){
-      console.log(err);
+      console.error("mint", err);
     }
   }
-
-  
 
   return (
     <>
@@ -120,8 +151,8 @@ export default function Staking({contract, account}) {
         <div className="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
           <div>
             <ul className="mt-1 max-w-2xl text-blue-sm text-gray-500">
-              <li>Your token amount staked : {userTokenStaked}</li>
-              <li>Your BROtoken wallet balance : {contractBalance} </li>
+              <li>Your token amount staked : {userStakedBalance}</li>
+              <li>Your BROtoken wallet balance : {userRewardBalance} </li>
               <li>Total supply : {totalSupply}</li>
               <li>Your staking reward : {userStakingReward} </li>
               

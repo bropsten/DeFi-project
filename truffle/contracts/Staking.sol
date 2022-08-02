@@ -54,9 +54,10 @@ contract Staking {
             require(lockedBalances[msg.sender].deadline == 0, "An amount is already locked");
             // uint256 deadline = block.timestamp + lockedTime;
             // lockedBalances[msg.sender] = LockedStaking(_amount, deadline);
-        } else {
-            balances[msg.sender] += _amount;
-        }
+        } //else {
+        // }
+
+        balances[msg.sender] += _amount;
 
         totalSupply += _amount;
         emit Stake(msg.sender, _amount);
@@ -113,6 +114,10 @@ contract Staking {
         return 
             ((balances[_account] * (rewardPerToken() - userRewardPerTokenPaid[_account])) 
             / 1e18) + rewardsBalance[_account];
+    }
+
+    function getStakedBalance(address _account) public view returns (uint256) {
+        return balances[_account];
     }
 
 }
