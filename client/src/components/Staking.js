@@ -61,27 +61,16 @@ export default function Staking({contract, account}) {
               By clicking this button you will receive 1000 BRO Tokens
             </p>
           </div>
-          <form className="mt-5 sm:flex sm:items-center">
-            <div className="w-full sm:max-w-xs">
-              <label htmlFor="mint" className="sr-only">
-                Mint
-              </label>
-              <input
-                type="text"
-                name="price"
-                id="mint"
-                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                placeholder="0.00"
-                aria-describedby="price-currency"
-              />
-            </div>
+          <div className="mt-6">
             <button
               type="submit"
-              className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              id="mint"
+              className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
             >
               Mint
             </button>
-          </form>
+          </div>
+  
         </div>
       </div>
 
