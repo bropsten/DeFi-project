@@ -15,6 +15,7 @@ export default function Staking({contract, account}) {
   const [userStakedBalance, setUserStakedBalance] = useState(0);
   const [userLockedBalance, setuserLockedBalance] = useState(0);
   const [userRewardBalance, setUserRewardBalance] = useState(0);
+  const [lockedDeadline, setLockedDeadline] = useState(0);
 
   useEffect(() => {
     if( ! contract ){
@@ -98,6 +99,14 @@ export default function Staking({contract, account}) {
     setUserRewardBalance(convertFromWei(rewardBalance));
   }
 
+  async function getUnlockDeadline() {
+    const lockedBalance = await contract.staking.methods.lockedBalances(account).call();
+    console.log("locked deadline (timestamp)", lockedBalance.deadline);
+    const dateObject = new Date(lockedBalance.deadline * 1000);
+    const date = dateObject.toLocaleString();
+    setLockedDeadline(date);
+  }
+
   async function getTotalSupply() {
     let totalSupply = await contract.staking.methods.totalSupply().call();
     console.log("totalSupply (wei)", totalSupply);
@@ -107,6 +116,7 @@ export default function Staking({contract, account}) {
   function updateInfos() {
     getUserStakedBalance();
     getUserLockedStakedBalance();
+    getUnlockDeadline();
     getUserRewardBalance();
     getTotalSupply();
   }
@@ -182,6 +192,7 @@ export default function Staking({contract, account}) {
             <ul className="mt-1 max-w-2xl text-blue-sm text-gray-500">
               <li>Your tokens amount staked : {userStakedBalance}</li>
               <li>Your locked tokens amount staked : {userLockedBalance}</li>
+              <li>Your tokens will be unlock the {lockedDeadline}</li>
               <li>Your BROtoken wallet balance : {userRewardBalance} </li>
               <li>Total supply : {totalSupply}</li>
               <li>Your staking reward : {userStakingReward} </li>
