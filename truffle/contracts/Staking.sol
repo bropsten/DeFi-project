@@ -115,14 +115,4 @@ contract Staking {
             / 1e18) + rewardsBalance[_account];
     }
 
-    /**
-     * @notice User claims their tokens
-     */
-    function claimReward() public updateReward(msg.sender) {
-        uint256 reward = rewardsBalance[msg.sender];
-        rewardsBalance[msg.sender] = 0;
-        emit RewardsClaimed(msg.sender, reward);
-        bool success = rewardsToken.transfer(msg.sender, reward);
-        require(success, "Transfer failed");
-    }
 }
