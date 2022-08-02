@@ -1,9 +1,18 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
-import React, { useState} from "react";
+import React, { useEffect, useState} from "react";
+import useWeb3 from "../hooks/useWeb3";
 
 export default function Staking({contract, account}) {
-  const [amountToStake, setAmountToStake] = useState(0);
+
   
+
+  const [amountToStake, setAmountToStake] = useState(0);
+  const{web3} = useWeb3();
+  const [contractBalance, setContractBalance] = useState(0);
+  const [totalSupply, setTotalSupply] = useState(0);
+  const [userTokenStaked, setUserTokenStaked] = useState(0);
+  const [userStakingReward, setUserStakingReward] = useState(0);
+
   async function addStaking(){
     const element = document.getElementById("stake");
     const amountToStake = element.value;
@@ -35,6 +44,49 @@ export default function Staking({contract, account}) {
       console.log(err);
     }
   }
+
+  
+  useEffect(() => {
+    if( ! web3 ){
+      return;
+    }
+
+    async function getYourOwnBalance() {
+      let balance = await contract.BROToken.methods.balanceOf(account).call();
+      balance = web3.utils.fromWei(balance, 'ether');
+      console.log(balance);
+      setContractBalance(balance);
+    }
+
+    async function getTotalSupply() {
+      let totalSupply = await contract.staking.methods.totalSupply().call();
+      totalSupply = web3.utils.fromWei(totalSupply, 'ether');
+      console.log(totalSupply);
+      setTotalSupply(totalSupply);
+    }
+
+    async function getUserTokenStaked() {
+      let userTokenStaked = await contract.staking.methods.balances(account).call();
+      userTokenStaked = web3.utils.fromWei(userTokenStaked, 'ether');
+      console.log(userTokenStaked);
+      setUserTokenStaked(userTokenStaked);
+    }
+
+    async function getUserStakingReward() {
+      let userStakingReward = await contract.staking.methods.earned(account).call();
+      userStakingReward = web3.utils.fromWei(userStakingReward, 'ether');
+      console.log(userStakingReward);
+      setUserStakingReward(userStakingReward);
+    }
+
+    getUserStakingReward();
+    getUserTokenStaked();
+    getTotalSupply()
+    getYourOwnBalance()
+}, [contract, account, web3]);
+
+
+
   
 
   return (
@@ -48,8 +100,10 @@ export default function Staking({contract, account}) {
           <div>
             <ul className="mt-1 max-w-2xl text-blue-sm text-gray-500">
               <li>Your account adress : {amountToStake}</li>
-              <li>Your staking balance : </li>
-              <li>Your staking reward : </li>
+              <li>Your token wallet balance : {contractBalance} </li>
+              <li>Total supply : {totalSupply}</li>
+              <li>Your token ammount staked : {userTokenStaked}</li>
+              <li>Your staking reward : {userStakingReward} </li>
               <li>Your Locking Time : </li>
             </ul>
           </div>
