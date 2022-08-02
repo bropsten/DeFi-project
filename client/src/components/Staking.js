@@ -13,6 +13,7 @@ export default function Staking({contract, account}) {
   const [broTokenAddress, setBroTokenAddress] = useState('');
 
   const [userStakedBalance, setUserStakedBalance] = useState(0);
+  const [userLockedBalance, setuserLockedBalance] = useState(0);
   const [userRewardBalance, setUserRewardBalance] = useState(0);
 
   useEffect(() => {
@@ -85,6 +86,12 @@ export default function Staking({contract, account}) {
     setUserStakedBalance(convertFromWei(stakedBalance));
   }
 
+  async function getUserLockedStakedBalance() {
+    const lockedBalance = await contract.staking.methods.lockedBalances(account).call();
+    console.log("locked balance (wei)", lockedBalance.balance);
+    setuserLockedBalance(convertFromWei(lockedBalance.balance));
+  }
+
   async function getUserRewardBalance() {
     const rewardBalance = await contract.BROToken.methods.balanceOf(account).call();
     console.log("reward balance (wei)", rewardBalance);
@@ -99,6 +106,7 @@ export default function Staking({contract, account}) {
 
   function updateInfos() {
     getUserStakedBalance();
+    getUserLockedStakedBalance();
     getUserRewardBalance();
     getTotalSupply();
   }
@@ -112,7 +120,7 @@ export default function Staking({contract, account}) {
   }
 
   function getInput(id) {
-    const element = document.getElementById("stake");
+    const element = document.getElementById(id);
     const value = element.value;
     element.value = "";
     return value;
@@ -124,7 +132,7 @@ export default function Staking({contract, account}) {
     if (value != "") {
       const amountToStake = convertToWei(value);
       const checkBox = document.getElementById("lockedTime");
-      const checkBoxTickOrNot = checkBox.checked.toString();
+      const checkBoxTickOrNot = checkBox.checked;
       
       try {
         await contract.BROToken.methods.approve(contract.staking._address, amountToStake).send({ from: account });
@@ -137,8 +145,8 @@ export default function Staking({contract, account}) {
   }
 
   async function withdraw() {
-    const value = getInput("withdraw")
-
+    const value = getInput("withdraw");
+    
     if (value != "") {
       const amountToWithdraw = convertToWei(value);
       
@@ -172,11 +180,11 @@ export default function Staking({contract, account}) {
         <div className="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
           <div>
             <ul className="mt-1 max-w-2xl text-blue-sm text-gray-500">
-              <li>Your token amount staked : {userStakedBalance}</li>
+              <li>Your tokens amount staked : {userStakedBalance}</li>
+              <li>Your locked tokens amount staked : {userLockedBalance}</li>
               <li>Your BROtoken wallet balance : {userRewardBalance} </li>
               <li>Total supply : {totalSupply}</li>
               <li>Your staking reward : {userStakingReward} </li>
-              
             </ul>
           </div>
         </div>
@@ -323,7 +331,7 @@ export default function Staking({contract, account}) {
               />
             </div>
             <button
-              // type="submit"
+              type="submit"
               onClick={withdraw}
               className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
