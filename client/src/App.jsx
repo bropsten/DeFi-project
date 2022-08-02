@@ -33,9 +33,7 @@ function App() {
           <Footer />
         </div>
 
-      }
-    
-      
+      }    
        
         
     </>
