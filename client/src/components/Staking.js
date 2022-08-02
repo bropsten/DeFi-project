@@ -3,32 +3,37 @@ import React, { useState} from "react";
 
 
 export default function Staking({contract, account}) {
+  const [amountToStake, setAmountToStake] = useState(0);
+  
+  async function addStaking(){
+    const element = document.getElementById("stake");
+    const amountToStake = element.value;
+    let transactionAddStaking;
 
+    const checkBox = document.getElementById("lockedTime");
+    const checkBoxTickOrNot = checkBox.checked;
+    console.log(checkBoxTickOrNot);
 
-    const [amountToStake, setAmountToStake] = useState(0);
-    
-    async function addStaking(){
+    try {
+      
+      transactionAddStaking = await contract.staking.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
+      console.log(transactionAddStaking);
+      
+      setAmountToStake(amountToStake);
+    }catch(err){
+      console.log(err);
+    }
 
-      const element = document.getElementById("stake");
-      const amountToStake = element.value;
-      let transactionAddStaking;
+    element.value = "";
+  }
 
-      console.log(contract);
-
-      const checkBox = document.getElementById("lockedTime");
-      const checkBoxTickOrNot = checkBox.checked;
-      console.log(checkBoxTickOrNot);
-
-      try {
-        transactionAddStaking = await contract.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
-        console.log(transactionAddStaking);
-        
-        setAmountToStake(amountToStake);
-      }catch(err){
-        console.log(err);
-      }
-
-      element.value = "";
+  async function mint() {
+    try {
+      let transaction = await contract.BROToken.methods.faucet(account).send({from: account});
+      console.log(transaction);
+    }catch(err){
+      console.log(err);
+    }
   }
   
 
@@ -63,6 +68,7 @@ export default function Staking({contract, account}) {
           </div>
           <div className="mt-6">
             <button
+              onClick={mint}
               type="submit"
               id="mint"
               className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
