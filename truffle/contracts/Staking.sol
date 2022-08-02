@@ -10,7 +10,7 @@ contract Staking {
 
     uint256 public totalSupply;
     uint256 private rewardPerTokenStored;
-    uint256 private lastUpdateTime;
+    uint256 private lastUpdateTime;aq
     uint256 private lockedTime = 4 weeks;
     uint256 private REWARD_RATE = 100;
     uint256 private LOCKED_REWARD_RATE = 150;
