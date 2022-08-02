@@ -2,8 +2,10 @@ import { CheckCircleIcon } from "@heroicons/react/solid";
 import React, { useState} from "react";
 
 
+export default function Staking({contract}) {
 
-export default function Staking() {
+  console.log("staking", contract);
+
 
     const [amountToStake, setAmountToStake] = useState(0);
     
@@ -18,7 +20,6 @@ export default function Staking() {
       element.value = "";
   }
   
-
 
   return (
     <>
