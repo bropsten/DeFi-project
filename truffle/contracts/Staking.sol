@@ -18,12 +18,16 @@ contract Staking {
     struct LockedStaking {
         uint256 balance;
         uint256 deadline;
+        uint256 rewards;
     }
 
     event Stake(address user, uint256 amount);
     event WithdrawStake(address user, uint256 amount);
+    event RewardsClaimed(address user, uint256 amount);
 
     mapping(address => uint256) public balances;
+    mapping(address => uint256) public userRewardPerTokenPaid;
+    mapping(address => uint256) public rewardsBalance;
     mapping(address => LockedStaking) public lockedBalances;
 
     constructor(address _stakingToken, address _rewardsToken) {
@@ -31,10 +35,18 @@ contract Staking {
         rewardsToken = IERC20(_rewardsToken);
     }
 
+    modifier updateReward(address _account) {
+        rewardPerTokenStored = rewardPerToken();
+        lastUpdateTime = block.timestamp;
+        rewardsBalance[_account] = earned(_account);
+        userRewardPerTokenPaid[_account] = rewardPerTokenStored;
+        _;
+    }
+
     /**
      * @notice Tokens staking
      * @param _amount the amount of tokens
-     * @param _locked specify id staking should be locked or not
+     * @param _locked specify if staking should be locked or not
      */
     function stake(uint256 _amount, bool _locked) external {
         require(_amount > 0, "Stake amount need to be more than 0");
@@ -84,11 +96,10 @@ contract Staking {
     /**
      * @notice Calculate the reward for each staked token
      */
-    function rewardPerToken() external view returns (uint256) {
+    function rewardPerToken() public view returns (uint256) {
         if (totalSupply == 0) {
             return rewardPerTokenStored;
         }
-
         return
             rewardPerTokenStored +
             (((block.timestamp - lastUpdateTime) * REWARD_RATE * 1e18) / totalSupply);
@@ -96,19 +107,22 @@ contract Staking {
 
     /**
      * @notice How much reward did a user get
+     * @param _account the user account
      */
-    function earned(address _account, bool _locked) external returns (uint256) {
-        
+    function earned(address _account) public view returns (uint256) {
+        return 
+            ((balances[_account] * (rewardPerToken() - userRewardPerTokenPaid[_account])) 
+            / 1e18) + rewardsBalance[_account];
     }
 
     /**
-     * @notice Return the staking token address
+     * @notice User claims their tokens
      */
-    function getStakingToken() external view returns (address) {
-        return address(stakingToken);
-    }
-
-    function getrewardsToken() external view returns (address) {
-        return address(rewardsToken);
+    function claimReward() public updateReward(msg.sender) {
+        uint256 reward = rewardsBalance[msg.sender];
+        rewardsBalance[msg.sender] = 0;
+        emit RewardsClaimed(msg.sender, reward);
+        bool success = rewardsToken.transfer(msg.sender, reward);
+        require(success, "Transfer failed");
     }
 }
