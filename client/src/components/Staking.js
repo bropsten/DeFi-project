@@ -1,7 +1,6 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import React, { useState} from "react";
 
-
 export default function Staking({contract, account}) {
   const [amountToStake, setAmountToStake] = useState(0);
   
@@ -11,11 +10,12 @@ export default function Staking({contract, account}) {
     let transactionAddStaking;
 
     const checkBox = document.getElementById("lockedTime");
-    const checkBoxTickOrNot = checkBox.checked;
+    const checkBoxTickOrNot = checkBox.checked.toString();
     console.log(checkBoxTickOrNot);
 
     try {
-      
+      let approve = await contract.BROToken.methods.approve(contract.staking._address, amountToStake).send({ from: account });
+      console.log(approve)
       transactionAddStaking = await contract.staking.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
       console.log(transactionAddStaking);
       
