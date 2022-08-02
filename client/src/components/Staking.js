@@ -111,10 +111,15 @@ export default function Staking({contract, account}) {
     return web3.utils.toWei(value, "ether");
   }
 
-  async function addStaking(){
+  function getInput(id) {
     const element = document.getElementById("stake");
     const value = element.value;
     element.value = "";
+    return value;
+  }
+
+  async function addStaking() {
+    const value = getInput("stake");
 
     if (value != "") {
       const amountToStake = convertToWei(value);
@@ -123,10 +128,26 @@ export default function Staking({contract, account}) {
       
       try {
         await contract.BROToken.methods.approve(contract.staking._address, amountToStake).send({ from: account });
-        await contract.staking.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
+        await contract.staking.methods.stake(amountToStake, checkBoxTickOrNot).send({ from: account });
         updateInfos();
-      }catch(err){
-        console.error("stake amount", EvalError);
+      } catch (err) {
+        console.error("stake amount", err);
+      }
+    }
+  }
+
+  async function withdraw() {
+    const value = getInput("withdraw")
+
+    if (value != "") {
+      const amountToWithdraw = convertToWei(value);
+      
+      try {
+        // await contract.BROToken.methods.approve(contract.staking._address, amountToWithdraw).send({ from: account });
+        await contract.staking.methods.withdraw(amountToWithdraw).send({ from: account });
+        updateInfos();
+      } catch (err) {
+        console.error("withdraw amount", err);
       }
     }
   }
@@ -135,7 +156,7 @@ export default function Staking({contract, account}) {
     try {
       await contract.BROToken.methods.faucet(account).send({from: account});
       updateInfos();
-    }catch(err){
+    } catch (err) {
       console.error("mint", err);
     }
   }
@@ -287,30 +308,31 @@ export default function Staking({contract, account}) {
               Change the email address you want associated with your account.
             </p>
           </div>
-          <form className="mt-5 sm:flex sm:items-center">
-            <div className="w-full sm:max-w-xs">
-              <label htmlFor="stake" className="sr-only">
-                Stake
+          <div className="mt-5 sm:flex sm:items-center">
+          <div className="w-full sm:max-w-xs">
+              <label htmlFor="withdraw" className="sr-only">
+                Withdraw
               </label>
               <input
                 type="text"
-                name="price"
-                id="price"
+                name="withdraw"
+                id="withdraw"
                 className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
                 placeholder="0.00"
                 aria-describedby="price-currency"
               />
             </div>
             <button
-              type="submit"
+              // type="submit"
+              onClick={withdraw}
               className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               WITHDRAW
             </button>
-          </form>
+          </div>
+            
         </div>
       </div>
-      
     </>
   );
 }
