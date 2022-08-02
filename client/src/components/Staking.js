@@ -20,7 +20,7 @@ export default function Staking({contract, account}) {
       console.log(checkBoxTickOrNot);
 
       try {
-        transactionAddStaking = await contract.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
+        transactionAddStaking = await contract.staking.methods.stake(amountToStake, checkBoxTickOrNot).send({from: account});
         console.log(transactionAddStaking);
         
         setAmountToStake(amountToStake);
@@ -29,7 +29,18 @@ export default function Staking({contract, account}) {
       }
 
       element.value = "";
-  }
+    }
+
+    async function mint() {
+      try {
+        let transaction = await contract.BROToken.methods.faucet(account).send({from: account});
+        console.log(transaction);
+      }catch(err){
+        console.log(err);
+      }
+    }
+
+    
   
 
   return (
@@ -65,6 +76,7 @@ export default function Staking({contract, account}) {
             <button
               type="submit"
               id="mint"
+              onClick={mint}
               className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
             >
               Mint
