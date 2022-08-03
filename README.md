@@ -72,4 +72,4 @@ Contract: staking
 
 ### Solidity Coverage 
 
-![Alt text](truffle\images\coverage.jpg)
+![Alt text](https://github.com/bropsten/DeFi-project/blob/main/truffle/images/coverage.jpg)
