@@ -1,6 +1,6 @@
 const staking = artifacts.require("./Staking.sol");
-const reward = artifacts.require("./RewardToken.sol");
-const { BN, expectRevert, expectEvent, time } = require('@openzeppelin/test-helpers');
+const reward = artifacts.require("./BROToken.sol");
+const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { assertion } = require('@openzeppelin/test-helpers/src/expectRevert');
 const { advanceBlock } = require('@openzeppelin/test-helpers/src/time');
 const { expect } = require('chai');
