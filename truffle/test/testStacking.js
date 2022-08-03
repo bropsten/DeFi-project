@@ -1,8 +1,6 @@
 const staking = artifacts.require("./Staking.sol");
 const reward = artifacts.require("./BROToken.sol");
-const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
-const { assertion } = require('@openzeppelin/test-helpers/src/expectRevert');
-const { advanceBlock } = require('@openzeppelin/test-helpers/src/time');
+const { BN, expectRevert, expectEvent, time } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 const Web3 = require ('web3');
 
@@ -10,7 +8,6 @@ contract('staking', accounts =>{
 
 
     const owner = accounts[0];
-    const staker = accounts[1];
 
     let stakingInstance;
     let rewardInstance;
@@ -26,7 +23,6 @@ contract('staking', accounts =>{
         //vérifier après avoir déployer le contract reward que celui-ci comporte bien 1M de tokens
         it('Sould mint 1Million token', async () => {
             const storedata = await rewardInstance.totalSupply({from : owner});
-            console.log(storedata);
             expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (1000000));
         });
 
@@ -61,13 +57,12 @@ contract('staking', accounts =>{
             rewardInstance = await reward.new({from : owner});
             _rewardAddr = rewardInstance.address;
             stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
-            await rewardInstance.approve(stakingInstance.address,_stakeAm);
+            await rewardInstance.approve(stakingInstance.address,_stakeAm,{from : owner});
             await stakingInstance.stake(_stakeAm, false, {from : owner});
         });
 
         it('Should the function stake with success the amount', async () => {
             const storedata = await stakingInstance.totalSupply({from : owner});
-            console.log(storedata);
             expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (1000));
         });
 
@@ -80,12 +75,19 @@ contract('staking', accounts =>{
             await rewardInstance.approve(stakingInstance.address,(_stakeAm));
             expectEvent(await stakingInstance.stake(_stakeAm, {from : owner}), 'Stake',{user : owner, amount : _stakeAm});
         });
-        /* Voir pour traiter les error si possible sinon laisser de côté
+        
 
-        it('Should revert error TransferFailed', async () => { 
-            await expectRevert(stakingInstance.TransferFailed("",{from : owner}));
+        it('Should revert stake amount need to be more than 0', async () => { 
+            await stakingInstance.withdraw(_stakeAm,{from : owner});
+            await expectRevert(stakingInstance.stake("0",{from : owner}),"Stake amount need to be more than 0");
 
-        });*/
+        });
+
+        it('Should revert transfert failed', async () => {
+            await rewardInstance.approve(stakingInstance.address,_stakeAm,{from : owner});
+            await stakingInstance.stake(_stakeAm, true, {from : owner});
+            await expectRevert(stakingInstance.stake("1000",{from : owner}),"An amount is already locked");
+        });
 
     });
 /* :::::::::::::::::::::::::::::::::::: Test de la Fonction withdraw ::::::::::::::::::::::::::::::*/
@@ -96,14 +98,13 @@ contract('staking', accounts =>{
             rewardInstance = await reward.new({from : owner});
             _rewardAddr = rewardInstance.address;
             stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
-            await rewardInstance.approve(stakingInstance.address,_stakeAm);
+            await rewardInstance.approve(stakingInstance.address,_stakeAm, {from : owner});
             await stakingInstance.stake(_stakeAm, false, {from : owner});
             await stakingInstance.withdraw(web3.utils.toWei("500","ether"));
         });
 
         it('Should the function can withdraw', async () => {
             const storedata = await stakingInstance.totalSupply({from : owner});
-            console.log(storedata);
             expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (500));
         });
 
@@ -116,6 +117,10 @@ contract('staking', accounts =>{
             const storedata = await stakingInstance.balances(owner,{from : owner});
             expectEvent(await stakingInstance.withdraw(storedata, {from : owner}), 'WithdrawStake',{user : owner, amount : storedata});
         });
+
+        it('Should revert withdraw balance need to be more than 0', async () => { 
+            await expectRevert(stakingInstance.withdraw(web3.utils.toWei("501","ether"),{from : owner}),"Balance need to be more than 0");
+        });
     });
 
     /* :::::::::::::::::::::::::::::::::::: Test de la Fonction earned ::::::::::::::::::::::::::::::*/
@@ -125,29 +130,41 @@ contract('staking', accounts =>{
             rewardInstance = await reward.new({from : owner});
             _rewardAddr = rewardInstance.address;
             stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
-            await rewardInstance.approve(stakingInstance.address,_stakeAm);
-            await stakingInstance.stake(_stakeAm,{from : owner});
+            await rewardInstance.approve(stakingInstance.address,_stakeAm,{from : owner});
+            await stakingInstance.stake(_stakeAm, false,{from : owner});
 
         });
         //Pas de calcul de token dans les rewards
         it('Should return the number of token rewarded after 1 day', async () => {
             await time.increase(time.duration.days(1));
-            await stakingInstance.rewardPerToken({from : owner});
+            await stakingInstance.withdraw(_stakeAm,{from : owner});
             const storedata = await stakingInstance.rewardsBalance(owner, {from : owner}); 
-            console.log (storedata);
-            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (86));
-        });
-
-        it('Should return the number of token rewarded after 1 year', async () => {
-            await time.increase(time.duration.years(1));
-            await stakingInstance.rewardPerToken({from : owner});
-            const storedata = await stakingInstance.rewardsBalance(owner, {from : owner}); 
-            console.log (storedata);
-            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (31390));
+            expect (storedata.toString()).to.be.equal("8640000");
         });
 
     });
 
+    /* :::::::::::::::::::::::::::::::::::: Test de la Fonction claimReward ::::::::::::::::::::::::::::::*/
+
+    describe("Test de la fonction claimReward", function() {
+        _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
+        beforeEach(async function (){
+            rewardInstance = await reward.new({from : owner});
+            _rewardAddr = rewardInstance.address;
+            stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
+            await rewardInstance.approve(stakingInstance.address,_stakeAm,{from : owner});
+            await stakingInstance.stake(_stakeAm, false,{from : owner});
+            await time.increase(time.duration.days(1));
+            
+
+        });
+        
+        it('Should return the number of token rewarded after 1 day', async () => {
+            const storedata = await stakingInstance.claimReward({from : owner});
+            expectEvent(storedata, 'RewardsClaimed',{user : owner, amount : new BN (8640000)});
+        });
+
+    });
 
 
 });
