@@ -1,0 +1,48 @@
+{
+  "kind": "dev",
+  "methods":
+  {
+    "earned(address)":
+    {
+      "params":
+      {
+        "_account": "the user account"
+      },
+      "returns":
+      {
+        "_0": "how many tokens the user has won since the last call to the contract"
+      }
+    },
+    "getStakedBalance(address)":
+    {
+      "params":
+      {
+        "_account": "the user account"
+      },
+      "returns":
+      {
+        "_0": "the balance from account"
+      }
+    },
+    "stake(uint256,bool)":
+    {
+      "params":
+      {
+        "_amount": "the amount of tokens",
+        "_locked": "specify if staking should be locked or not"
+      }
+    },
+    "withdraw(uint256)":
+    {
+      "params":
+      {
+        "_amount": "the amount of tokens"
+      }
+    },
+    "withdrawLocked()":
+    {
+      "details": "The staking deadline is reset to 0"
+    }
+  },
+  "version": 1
+}
