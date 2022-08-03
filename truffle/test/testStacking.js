@@ -2,6 +2,7 @@ const staking = artifacts.require("./Staking.sol");
 const reward = artifacts.require("./BROToken.sol");
 const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { assertion } = require('@openzeppelin/test-helpers/src/expectRevert');
+const { advanceBlock } = require('@openzeppelin/test-helpers/src/time');
 const { expect } = require('chai');
 const Web3 = require ('web3');
 
@@ -118,7 +119,7 @@ contract('staking', accounts =>{
     });
 
     /* :::::::::::::::::::::::::::::::::::: Test de la Fonction earned ::::::::::::::::::::::::::::::*/
-    describe("Test de la fonction Earned", function() {
+    describe("Test de la fonction RewardPerToken", function() {
         _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
         beforeEach(async function (){
             rewardInstance = await reward.new({from : owner});
@@ -126,18 +127,25 @@ contract('staking', accounts =>{
             stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
             await rewardInstance.approve(stakingInstance.address,_stakeAm);
             await stakingInstance.stake(_stakeAm,{from : owner});
+
         });
-        //A refaire car soucis avec cette fonction
-        it('Sould return the number of token earned', async () => {
-            const storedata = await stakingInstance.earned(owner,{from : owner});
-            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.equal(new BN (1000));
+        //Pas de calcul de token dans les rewards
+        it('Should return the number of token rewarded after 1 day', async () => {
+            await time.increase(time.duration.days(1));
+            await stakingInstance.rewardPerToken({from : owner});
+            const storedata = await stakingInstance.s_rewards(owner, {from : owner}); 
+            console.log (storedata);
+            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (86));
         });
-        //Test de la fonction rewardPerToken à terminer 
-        it('Should rewardPerToken test', async () => {
-            const storedata = await stakingInstance.s_balances(owner,{from : owner});
-            await stakingInstance.withdraw(storedata, {from : owner})
-            expect()
+
+        it('Should return the number of token rewarded after 1 year', async () => {
+            await time.increase(time.duration.years(1));
+            await stakingInstance.rewardPerToken({from : owner});
+            const storedata = await stakingInstance.s_rewards(owner, {from : owner}); 
+            console.log (storedata);
+            expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (31390));
         });
+
     });
 
 

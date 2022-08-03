@@ -108,8 +108,7 @@ export default function Contacts() {
               </div>
               <h3 className="text-lg font-medium text-white">Contact information</h3>
               <p className="mt-6 text-base text-indigo-50 max-w-3xl">
-                Nullam risus blandit ac aliquam justo ipsum. Quam mauris volutpat massa dictumst amet. Sapien tortor
-                lacus arcu.
+                We hiring some ninja coder if you thinks you can help us with our crazy Defi Dapp
               </p>
               <dl className="mt-8 space-y-6">
                 <dt>
@@ -124,7 +123,7 @@ export default function Contacts() {
                 </dt>
                 <dd className="flex text-base text-indigo-50">
                   <MailIcon className="flex-shrink-0 w-6 h-6 text-indigo-200" aria-hidden="true" />
-                  <span className="ml-3">support@workcation.com</span>
+                  <span className="ml-3">hello@alyrapp.com</span>
                 </dd>
               </dl>
               <ul  className="mt-8 flex space-x-12">

@@ -1,5 +1,4 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
-import BigNumber from "bignumber.js"
 import React, { useEffect, useState} from "react";
 import useWeb3 from "../hooks/useWeb3";
 
@@ -21,7 +20,6 @@ export default function Staking({contract, account}) {
 
     setBroTokenAddress(contract.BROToken._address);
     updateInfos();
-
   }, [contract, account]);
   
   function updateInfos() {
@@ -313,9 +311,9 @@ export default function Staking({contract, account}) {
             </button>
           </div>
             
+
         </div>
       </div>
-
       <div className="bg-white shadow sm:rounded-lg mt-10">
         <div className="px-4 py-5 sm:p-6">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -340,7 +338,6 @@ export default function Staking({contract, account}) {
               WITHDRAW LOCKED
             </button>
           </div>
-            
         </div>
       </div>
     </>
