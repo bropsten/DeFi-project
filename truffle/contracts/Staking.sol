@@ -47,7 +47,7 @@ contract Staking {
      * @param _amount the amount of tokens
      * @param _locked specify if staking should be locked or not
      */
-    function stake(uint256 _amount, bool _locked) external {
+    function stake(uint256 _amount, bool _locked) external updateReward(msg.sender) {
         require(_amount > 0, "Stake amount need to be more than 0");
         if (_locked) {
             require(lockedBalances[msg.sender].deadline == 0, "An amount is already locked");
@@ -67,7 +67,7 @@ contract Staking {
      * @notice Widthraw tokens from staking balance
      * @param _amount the amount of tokens
      */
-    function withdraw(uint256 _amount) external {
+    function withdraw(uint256 _amount) external updateReward(msg.sender) {
         require(balances[msg.sender] >= _amount, "Balance need to be more than 0");
         totalSupply -= _amount;
         balances[msg.sender] -= _amount;
@@ -80,7 +80,7 @@ contract Staking {
      * @notice Widthraw tokens from locked staking balance, all tokens will be withdrawn
      * @dev The staking deadline is reset
      */
-    function withdrawLocked() external {
+    function withdrawLocked() external updateReward(msg.sender) {
         require(lockedBalances[msg.sender].balance > 0, "Balance is empty");
         require(block.timestamp > lockedBalances[msg.sender].deadline, "Withdrawal is not yet possible");
         uint256 amount = lockedBalances[msg.sender].balance;
@@ -102,6 +102,19 @@ contract Staking {
         return
             rewardPerTokenStored +
             (((block.timestamp - lastUpdateTime) * REWARD_RATE * 1e18) / totalSupply);
+    }
+
+    /**
+     * @notice User can claim their rewards tokens
+     */
+    function claimReward() external updateReward(msg.sender) nonReentrant {
+        uint256 reward = s_rewards[msg.sender];
+        s_rewards[msg.sender] = 0;
+        emit RewardsClaimed(msg.sender, reward);
+        bool success = s_rewardsToken.transfer(msg.sender, reward);
+        if (!success) {
+            revert TransferFailed();
+        }
     }
 
     /**

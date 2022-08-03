@@ -5,14 +5,13 @@ import useWeb3 from "../hooks/useWeb3";
 
 export default function Staking({contract, account}) {
 
-  const{web3} = useWeb3();
+  const {web3} = useWeb3();
   const [totalSupply, setTotalSupply] = useState(0);
   const [userStakingReward, setUserStakingReward] = useState(0);
   const [broTokenAddress, setBroTokenAddress] = useState('');
-
   const [userStakedBalance, setUserStakedBalance] = useState(0);
   const [userLockedBalance, setuserLockedBalance] = useState(0);
-  const [userRewardBalance, setUserRewardBalance] = useState(0);
+  const [userBROTokenBalance, setuserBROTokenBalance] = useState(0);
   const [lockedDeadline, setLockedDeadline] = useState(0);
 
   useEffect(() => {
@@ -24,7 +23,16 @@ export default function Staking({contract, account}) {
     updateInfos();
 
   }, [contract, account]);
-
+  
+  function updateInfos() {
+    getUserStakedBalance();
+    getUserLockedStakedBalance();
+    getUserRewardBalance();
+    getUnlockDeadline();
+    getUserBROTokenBalance();
+    getTotalSupply();
+  }
+  
   async function getUserStakedBalance() {
     const stakedBalance = await contract.staking.methods.balances(account).call();
     console.log("staked balance (wei)", stakedBalance);
@@ -40,15 +48,20 @@ export default function Staking({contract, account}) {
   async function getUserBROTokenBalance() {
     const rewardBalance = await contract.BROToken.methods.balanceOf(account).call();
     console.log("reward balance (wei)", rewardBalance);
-    setUserRewardBalance(convertFromWei(rewardBalance));
+    setuserBROTokenBalance(convertFromWei(rewardBalance));
   }
 
   async function getUnlockDeadline() {
     const lockedBalance = await contract.staking.methods.lockedBalances(account).call();
     console.log("locked deadline (timestamp)", lockedBalance.deadline);
-    const dateObject = new Date(lockedBalance.deadline * 1000);
-    const date = dateObject.toLocaleString();
-    setLockedDeadline(date);
+    
+    if (lockedBalance.deadline === "0") {
+      setLockedDeadline("");
+    } else {
+      const dateObject = new Date(lockedBalance.deadline * 1000);
+      const date = dateObject.toLocaleString();
+      setLockedDeadline(date);
+    }
   }
 
   async function getTotalSupply() {
@@ -57,12 +70,10 @@ export default function Staking({contract, account}) {
     setTotalSupply(convertFromWei(totalSupply));
   }
 
-  function updateInfos() {
-    getUserStakedBalance();
-    getUserLockedStakedBalance();
-    getUnlockDeadline();
-    getUserBROTokenBalance();
-    getTotalSupply();
+  async function getUserRewardBalance() {
+    const stakingRewardBalance = await contract.staking.methods.rewardsBalance(account).call();
+    console.log("staking reward balance (wei)", stakingRewardBalance);
+    setUserStakingReward(stakingRewardBalance);
   }
   
   function convertFromWei(value) {
@@ -145,7 +156,7 @@ export default function Staking({contract, account}) {
               <li>Your tokens amount staked : {userStakedBalance}</li>
               <li>Your locked tokens amount staked : {userLockedBalance}</li>
               <li>Your tokens will be unlock the {lockedDeadline}</li>
-              <li>Your BROtoken wallet balance : {userRewardBalance} </li>
+              <li>Your BROtoken wallet balance : {userBROTokenBalance} </li>
               <li>Total supply : {totalSupply}</li>
               <li>Your staking reward : {userStakingReward} </li>
             </ul>
