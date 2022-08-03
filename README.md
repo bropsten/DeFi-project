@@ -68,8 +68,8 @@ Contract: staking
 
 ### ETH Gas Reporter
 
-![Alt text](truffle\images\ethgas2.jpg)
+![ETH Gas Reporter](https://github.com/bropsten/DeFi-project/blob/main/truffle/images/ethgas2.jpg)
 
 ### Solidity Coverage 
 
-![Alt text](https://github.com/bropsten/DeFi-project/blob/main/truffle/images/coverage.jpg)
+![Solidity Coverage](https://github.com/bropsten/DeFi-project/blob/main/truffle/images/coverage.jpg)
