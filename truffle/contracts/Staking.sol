@@ -68,7 +68,7 @@ contract Staking {
      * @param _amount the amount of tokens
      */
     function withdraw(uint256 _amount) external updateReward(msg.sender) {
-        require(balances[msg.sender] >= _amount, "Balance need to be more than 0");
+        require(balances[msg.sender] >= _amount, "The amount is greater than the balance");
         totalSupply -= _amount;
         balances[msg.sender] -= _amount;
         emit WithdrawStake(msg.sender, _amount);
