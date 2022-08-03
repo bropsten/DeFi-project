@@ -13,12 +13,28 @@ export default function Staking({contract, account}) {
   const [userBROTokenBalance, setuserBROTokenBalance] = useState(0);
   const [lockedDeadline, setLockedDeadline] = useState(0);
   const [rewardPerTokenStored, setrewardPerTokenStored] = useState(0);
+  const [stakingContract, setStakingContract] = useState(0);
 
   useEffect(() => {
     if( ! contract ){
       return;
     }
 
+    contract.staking.events.Stake({ fromBlock: "latest" }) 
+    .on('data', event => {
+      getRewardPerTokenStored();
+      getUserRewardBalance();
+      getTotalSupply();
+    });
+
+    contract.staking.events.WithdrawStake({ fromBlock: "latest" }) 
+    .on('data', event => {
+      getRewardPerTokenStored();
+      getUserRewardBalance();
+      getTotalSupply();
+    });
+
+    setStakingContract(contract.staking);
     setBroTokenAddress(contract.BROToken._address);
     updateInfos();
   }, [contract, account]);
@@ -32,7 +48,7 @@ export default function Staking({contract, account}) {
     getRewardPerTokenStored();
     getTotalSupply();
   }
-  
+
   async function getUserStakedBalance() {
     const stakedBalance = await contract.staking.methods.balances(account).call();
     console.log("staked balance (wei)", stakedBalance);
@@ -46,15 +62,15 @@ export default function Staking({contract, account}) {
   }
 
   async function getUserBROTokenBalance() {
-    const rewardBalance = await contract.BROToken.methods.balanceOf(account).call();
-    console.log("reward balance (wei)", rewardBalance);
-    setuserBROTokenBalance(convertFromWei(rewardBalance));
+    const BROBalance = await contract.BROToken.methods.balanceOf(account).call();
+    console.log("reward balance (wei)", BROBalance);
+    setuserBROTokenBalance(convertFromWei(BROBalance));
   }
 
   async function getRewardPerTokenStored() {
     const rewardPerToken = await contract.staking.methods.rewardPerTokenStored().call();
     console.log("reward per token stored", rewardPerToken);
-    setrewardPerTokenStored(rewardPerToken);
+    setrewardPerTokenStored(convertFromWei(rewardPerToken));
   }
 
   async function getUnlockDeadline() {
@@ -141,7 +157,16 @@ export default function Staking({contract, account}) {
 
   async function mint() {
     try {
-      await contract.BROToken.methods.faucet(account).send({from: account});
+      await contract.BROToken.methods.faucet(account).send({ from: account });
+      updateInfos();
+    } catch (err) {
+      console.error("mint", err);
+    }
+  }
+
+  async function claimReward() {
+    try {
+      await contract.staking.methods.claimReward().send({ from: account });
       updateInfos();
     } catch (err) {
       console.error("mint", err);
@@ -212,6 +237,7 @@ export default function Staking({contract, account}) {
               <div className="-mx-2 -my-1.5 flex">
                 <button
                   type="button"
+                  onClick={claimReward}
                   className="bg-green-50 px-2 py-1.5 rounded-md text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
                 >
                   Claim my reward
