@@ -12,6 +12,7 @@ export default function Staking({contract, account}) {
   const [userLockedBalance, setuserLockedBalance] = useState(0);
   const [userBROTokenBalance, setuserBROTokenBalance] = useState(0);
   const [lockedDeadline, setLockedDeadline] = useState(0);
+  const [rewardPerTokenStored, setrewardPerTokenStored] = useState(0);
 
   useEffect(() => {
     if( ! contract ){
@@ -28,6 +29,7 @@ export default function Staking({contract, account}) {
     getUserRewardBalance();
     getUnlockDeadline();
     getUserBROTokenBalance();
+    getRewardPerTokenStored();
     getTotalSupply();
   }
   
@@ -47,6 +49,12 @@ export default function Staking({contract, account}) {
     const rewardBalance = await contract.BROToken.methods.balanceOf(account).call();
     console.log("reward balance (wei)", rewardBalance);
     setuserBROTokenBalance(convertFromWei(rewardBalance));
+  }
+
+  async function getRewardPerTokenStored() {
+    const rewardPerToken = await contract.staking.methods.rewardPerTokenStored().call();
+    console.log("reward per token stored", rewardPerToken);
+    setrewardPerTokenStored(rewardPerToken);
   }
 
   async function getUnlockDeadline() {
@@ -71,7 +79,7 @@ export default function Staking({contract, account}) {
   async function getUserRewardBalance() {
     const stakingRewardBalance = await contract.staking.methods.rewardsBalance(account).call();
     console.log("staking reward balance (wei)", stakingRewardBalance);
-    setUserStakingReward(stakingRewardBalance);
+    setUserStakingReward(convertFromWei(stakingRewardBalance));
   }
   
   function convertFromWei(value) {
@@ -157,6 +165,7 @@ export default function Staking({contract, account}) {
               <li>Your BROtoken wallet balance : {userBROTokenBalance} </li>
               <li>Total supply : {totalSupply}</li>
               <li>Your staking reward : {userStakingReward} </li>
+              <li>Reward per token stored : {rewardPerTokenStored} </li>
             </ul>
           </div>
         </div>
