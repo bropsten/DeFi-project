@@ -25,6 +25,7 @@ function useMeta() {
             if (accounts.length > 0) {
                 setAccount(accounts[0]);
             } else {
+                location.reload();
                 console.error("No accounts.");
             }
         });
