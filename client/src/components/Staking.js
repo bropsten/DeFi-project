@@ -20,6 +20,7 @@ export default function Staking({contract, account}) {
     { name: 'Your token amount staked', initials: 'TaS', amount: userStakedBalance, bgColor: 'bg-pink-600', token: 'BROtoken' },
     { name:"Your locked tokens amount staked" , initials: 'LaS', amount:userLockedBalance , bgColor: 'bg-purple-600' , token: 'BROtoken' },
     { name: "Your tokens will be unlock the", initials: 'WbU', amount:lockedDeadline , bgColor: 'bg-yellow-500'},
+    { name: "Your BROToken Wallet Balance", initials: 'WbU', amount:userBROTokenBalance , bgColor: 'bg-red-500'},
     { name: "Total supply :" , initials: 'TS', amount: totalSupply, bgColor: 'bg-blue-500', token: 'BROtoken'},
     { name: "Your staking reward :" , initials: 'YsR', amount: userStakingReward, bgColor: 'bg-green-500', token: 'BROtoken' },
     { name: "Reward per token stored :" , initials: 'RpT', amount: rewardPerTokenStored, bgColor: 'bg-red-500', token: 'BROtoken' },
@@ -192,7 +193,7 @@ export default function Staking({contract, account}) {
   return (
     <>
 
-      <div className="max-w-7xl mx-auto mb-10 ">
+      <div className="max-w-7xl mb-10 ">
         <h1 className="text-2xl font-semibold text-gray-900">
           Staking Dashboard
         </h1>
