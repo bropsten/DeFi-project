@@ -15,9 +15,9 @@ import {
 
 const navigation = [
   { name: 'Staking', href: '#', icon: HomeIcon, current: true },
-  { name: 'Lending', href: '#', icon: InboxIcon, current: false },
-  { name: 'DAO', href: '#', icon: UsersIcon, current: false },
-  { name: 'Reports', href: '#', icon: ChartBarIcon, current: false },
+  { name: 'Lending (soon)', href: '#', icon: InboxIcon, current: false },
+  { name: 'DAO (soon)', href: '#', icon: UsersIcon, current: false },
+  { name: 'Reports (soon)', href: '#', icon: ChartBarIcon, current: false },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },

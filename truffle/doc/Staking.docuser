@@ -1,0 +1,35 @@
+{
+  "kind": "user",
+  "methods":
+  {
+    "claimReward()":
+    {
+      "notice": "User can claim their rewards tokens"
+    },
+    "earned(address)":
+    {
+      "notice": "How much reward did a user get"
+    },
+    "getStakedBalance(address)":
+    {
+      "notice": "get the staked balance of a user"
+    },
+    "rewardPerToken()":
+    {
+      "notice": "Calculate the reward for each staked token"
+    },
+    "stake(uint256,bool)":
+    {
+      "notice": "Tokens staking"
+    },
+    "withdraw(uint256)":
+    {
+      "notice": "Widthraw tokens from staking balance"
+    },
+    "withdrawLocked()":
+    {
+      "notice": "Widthraw tokens from locked staking balance, all tokens will be withdrawn"
+    }
+  },
+  "version": 1
+}
