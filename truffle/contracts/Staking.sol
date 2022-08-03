@@ -18,7 +18,6 @@ contract Staking {
     struct LockedStaking {
         uint256 balance;
         uint256 deadline;
-        uint256 rewards;
     }
 
     event Stake(address user, uint256 amount);
@@ -52,8 +51,8 @@ contract Staking {
         require(_amount > 0, "Stake amount need to be more than 0");
         if (_locked) {
             require(lockedBalances[msg.sender].deadline == 0, "An amount is already locked");
-            // uint256 deadline = block.timestamp + lockedTime;
-            // lockedBalances[msg.sender] = LockedStaking(_amount, deadline);
+            uint256 deadline = block.timestamp + lockedTime;
+            lockedBalances[msg.sender] = LockedStaking(_amount, deadline);
         } else {
             balances[msg.sender] += _amount;
         }
@@ -115,14 +114,7 @@ contract Staking {
             / 1e18) + rewardsBalance[_account];
     }
 
-    /**
-     * @notice User claims their tokens
-     */
-    function claimReward() public updateReward(msg.sender) {
-        uint256 reward = rewardsBalance[msg.sender];
-        rewardsBalance[msg.sender] = 0;
-        emit RewardsClaimed(msg.sender, reward);
-        bool success = rewardsToken.transfer(msg.sender, reward);
-        require(success, "Transfer failed");
+    function getStakedBalance(address _account) public view returns (uint256) {
+        return balances[_account];
     }
 }

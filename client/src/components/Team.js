@@ -1,28 +1,28 @@
-/* This example requires Tailwind CSS v2.0+ */
+import Poupipou from '../images/poupipou.png';
+import Doki from '../images/doki.jpg';
+import Akuma from '../images/akuma.png';
+
 const people = [
     {
-      name: 'Akugone',
-      role: 'Senior Designer',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80',
-      twitterUrl: '#',
-      linkedinUrl: '#',
+      name: 'Poupipou',
+      role: 'Dev back flip in the groove',
+      imageUrl: Poupipou,
+      twitterUrl: 'https://www.youtube.com/watch?v=xvFZjo5PgG0',
+      linkedinUrl: 'https://www.youtube.com/watch?v=xvFZjo5PgG0',
     },
     {
-        name: 'Poupipou',
-        role: 'Senior Designer',
-        imageUrl:
-          'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80',
-        twitterUrl: '#',
-        linkedinUrl: '#',
+        name: 'Doki San',
+        role: 'Dev Designer in da house',
+        imageUrl:Doki,
+        twitterUrl: 'https://www.youtube.com/watch?v=xvFZjo5PgG0',
+        linkedinUrl: 'https://www.youtube.com/watch?v=xvFZjo5PgG0',
       },
       {
-        name: 'Doki San',
-        role: 'Senior Designer',
-        imageUrl:
-          'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80',
-        twitterUrl: '#',
-        linkedinUrl: '#',
+        name: 'Akuma',
+        role: 'Dev full en délire',
+        imageUrl:Akuma,
+        twitterUrl: 'https://www.youtube.com/watch?v=xvFZjo5PgG0',
+        linkedinUrl: 'https://www.youtube.com/watch?v=xvFZjo5PgG0',
       },
     // More people...
   ]
@@ -35,8 +35,7 @@ const people = [
             <div className="space-y-5 sm:space-y-4 md:max-w-xl lg:max-w-3xl xl:max-w-none">
               <h2 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">Meet our team</h2>
               <p className="text-xl text-gray-300">
-                Ornare sagittis, suspendisse in hendrerit quis. Sed dui aliquet lectus sit pretium egestas vel mattis
-                neque.
+              « Chuck Norris ne se mouille pas, c'est l'eau qui se Chuck-Norrise. » Chuck Norris
               </p>
             </div>
             <ul  className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:grid-cols-3 lg:gap-8">
