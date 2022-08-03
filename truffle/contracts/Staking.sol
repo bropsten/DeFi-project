@@ -107,14 +107,12 @@ contract Staking {
     /**
      * @notice User can claim their rewards tokens
      */
-    function claimReward() external updateReward(msg.sender) nonReentrant {
-        uint256 reward = s_rewards[msg.sender];
-        s_rewards[msg.sender] = 0;
+    function claimReward() external updateReward(msg.sender) {
+        uint256 reward = rewardsBalance[msg.sender];
+        rewardsBalance[msg.sender] = 0;
         emit RewardsClaimed(msg.sender, reward);
-        bool success = s_rewardsToken.transfer(msg.sender, reward);
-        if (!success) {
-            revert TransferFailed();
-        }
+        bool success = rewardsToken.transfer(msg.sender, reward);
+        require(success, "Transfer failed");
     }
 
     /**

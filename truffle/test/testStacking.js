@@ -133,7 +133,7 @@ contract('staking', accounts =>{
         it('Should return the number of token rewarded after 1 day', async () => {
             await time.increase(time.duration.days(1));
             await stakingInstance.rewardPerToken({from : owner});
-            const storedata = await stakingInstance.s_rewards(owner, {from : owner}); 
+            const storedata = await stakingInstance.rewardsBalance(owner, {from : owner}); 
             console.log (storedata);
             expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (86));
         });
@@ -141,7 +141,7 @@ contract('staking', accounts =>{
         it('Should return the number of token rewarded after 1 year', async () => {
             await time.increase(time.duration.years(1));
             await stakingInstance.rewardPerToken({from : owner});
-            const storedata = await stakingInstance.s_rewards(owner, {from : owner}); 
+            const storedata = await stakingInstance.rewardsBalance(owner, {from : owner}); 
             console.log (storedata);
             expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (31390));
         });
