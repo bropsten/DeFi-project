@@ -15,7 +15,7 @@ contract('staking', accounts =>{
 
     /* :::::::::::::::::::::::::::::::::::: Test de la Fonction stake ::::::::::::::::::::::::::::::*/
 
-    describe("Test du contrat reward", function(){
+    describe.skip("Test du contrat reward", function(){
         
         beforeEach(async function (){
             rewardInstance = await reward.new({from : owner});
@@ -28,7 +28,7 @@ contract('staking', accounts =>{
 
     });
 
-    describe("Test du constructor", function(){
+    describe.skip("Test du constructor", function(){
         beforeEach(async function (){
             rewardInstance = await reward.new({from : owner});
             const rewardAddr = rewardInstance.address;
@@ -50,7 +50,7 @@ contract('staking', accounts =>{
 
     });
 
-    describe("Test de la fonction stake", function(){ 
+    describe.skip("Test de la fonction stake", function(){ 
         _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
 
         beforeEach(async function () {
@@ -91,7 +91,7 @@ contract('staking', accounts =>{
 
     });
 /* :::::::::::::::::::::::::::::::::::: Test de la Fonction withdraw ::::::::::::::::::::::::::::::*/
-    describe("Test de la fonction withdraw", function(){ 
+    describe.skip("Test de la fonction withdraw", function(){ 
         _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
 
         beforeEach(async function (){
@@ -125,18 +125,32 @@ contract('staking', accounts =>{
 
     /* :::::::::::::::::::::::::::::::::::: Test de la Fonction earned ::::::::::::::::::::::::::::::*/
     describe("Test de la fonction RewardPerToken", function() {
-        _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
+        let _stakeAm = new BN (web3.utils.toWei ("1000", "ether"));
         beforeEach(async function (){
             rewardInstance = await reward.new({from : owner});
             _rewardAddr = rewardInstance.address;
             stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
             await rewardInstance.approve(stakingInstance.address,_stakeAm,{from : owner});
             await stakingInstance.stake(_stakeAm, false,{from : owner});
-
         });
         //Pas de calcul de token dans les rewards
         it('Should return the number of token rewarded after 1 day', async () => {
             await time.increase(time.duration.days(1));
+
+            await stakingInstance.withdraw(stakeAmount, {from : owner});
+            const storedata = await stakingInstance.rewardsBalance(owner, {from : owner}); 
+            expect(new BN(storedata)).to.be.bignumber.equal(new BN(86));
+            // expect(new BN(web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (86));
+        });
+
+        // it('Should return the number of token rewarded after 1 year', async () => {
+        //     await time.increase(time.duration.years(1));
+        //     await stakingInstance.rewardPerToken({from : owner});
+        //     const storedata = await stakingInstance.rewardsBalance(owner, {from : owner}); 
+        //     console.log (storedata);
+        //     expect(new BN (web3.utils.fromWei (storedata, "ether"))).to.be.bignumber.equal(new BN (31390));
+        // });
+
             await stakingInstance.withdraw(_stakeAm,{from : owner});
             const storedata = await stakingInstance.rewardsBalance(owner, {from : owner}); 
             expect (storedata.toString()).to.be.equal("8640000");
@@ -154,17 +168,12 @@ contract('staking', accounts =>{
             stakingInstance = await staking.new(_rewardAddr,_rewardAddr,{from : owner});
             await rewardInstance.approve(stakingInstance.address,_stakeAm,{from : owner});
             await stakingInstance.stake(_stakeAm, false,{from : owner});
-            await time.increase(time.duration.days(1));
-            
-
+            await time.increase(time.duration.days(1));  
         });
         
         it('Should return the number of token rewarded after 1 day', async () => {
             const storedata = await stakingInstance.claimReward({from : owner});
             expectEvent(storedata, 'RewardsClaimed',{user : owner, amount : new BN (8640000)});
         });
-
     });
-
-
 });
