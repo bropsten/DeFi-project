@@ -9,7 +9,7 @@ contract Staking {
     IERC20 public rewardsToken;
 
     uint256 public totalSupply;
-    uint256 private rewardPerTokenStored;
+    uint256 public rewardPerTokenStored;
     uint256 private lastUpdateTime;
     uint256 private lockedTime = 1 minutes;
     uint256 private REWARD_RATE = 100;
@@ -78,7 +78,7 @@ contract Staking {
 
     /**
      * @notice Widthraw tokens from locked staking balance, all tokens will be withdrawn
-     * @dev The staking deadline is reset
+     * @dev The staking deadline is reset to 0
      */
     function withdrawLocked() external updateReward(msg.sender) {
         require(lockedBalances[msg.sender].balance > 0, "Balance is empty");
@@ -118,6 +118,7 @@ contract Staking {
     /**
      * @notice How much reward did a user get
      * @param _account the user account
+     * @return how many tokens the user has won since the last call to the contract
      */
     function earned(address _account) public view returns (uint256) {
         return 
@@ -125,6 +126,11 @@ contract Staking {
             / 1e18) + rewardsBalance[_account];
     }
 
+    /**
+     * @notice get the staked balance of a user
+     * @param _account the user account
+     * @return the balance from account
+     */
     function getStakedBalance(address _account) public view returns (uint256) {
         return balances[_account];
     }
