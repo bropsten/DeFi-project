@@ -190,6 +190,18 @@ export default function Staking({contract, account}) {
     }
   }
 
+  async function compound() {
+    try {
+      const transaction = await contract.staking.methods.claimReward().send({ from: account });
+      const rewards = transaction.events.RewardsClaimed.returnValues.amount;
+      await contract.BROToken.methods.approve(contract.staking._address, rewards).send({ from: account });
+      await contract.staking.methods.stake(rewards, false).send({ from: account });
+      updateInfos();
+    } catch (err) {
+      console.log("compound", err)
+    }
+  }
+
   return (
     <>
 
@@ -259,12 +271,14 @@ export default function Staking({contract, account}) {
                 <div className="-mx-2 -my-1.5 flex">
                   <button
                     type="button"
+                    onClick={claimReward}
                     className="mr-5 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                   >
                     Claim my reward
                   </button>
                   <button
                     type="button"
+                    onClick={compound}
                     className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                   >
                     Compound my reward
