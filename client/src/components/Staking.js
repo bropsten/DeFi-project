@@ -67,31 +67,31 @@ export default function Staking({contract, account}) {
   }
 
   async function getUserStakedBalance() {
-    const stakedBalance = await contract.staking.methods.balances(account).call();
+    const stakedBalance = await contract.staking.methods.balances(account).call({ from: account });
     console.log("staked balance (wei)", stakedBalance);
     setUserStakedBalance(convertFromWei(stakedBalance));
   }
 
   async function getUserLockedStakedBalance() {
-    const lockedBalance = await contract.staking.methods.lockedBalances(account).call();
+    const lockedBalance = await contract.staking.methods.lockedBalances(account).call({ from: account });
     console.log("locked balance (wei)", lockedBalance.balance);
     setuserLockedBalance(convertFromWei(lockedBalance.balance));
   }
 
   async function getUserBROTokenBalance() {
-    const BROBalance = await contract.BROToken.methods.balanceOf(account).call();
+    const BROBalance = await contract.BROToken.methods.balanceOf(account).call({ from: account });
     console.log("reward balance (wei)", BROBalance);
     setuserBROTokenBalance(convertFromWei(BROBalance));
   }
 
   async function getRewardPerTokenStored() {
-    const rewardPerToken = await contract.staking.methods.rewardPerTokenStored().call();
+    const rewardPerToken = await contract.staking.methods.rewardPerTokenStored().call({ from: account });
     console.log("reward per token stored", rewardPerToken);
     setrewardPerTokenStored(convertFromWei(rewardPerToken));
   }
 
   async function getUnlockDeadline() {
-    const lockedBalance = await contract.staking.methods.lockedBalances(account).call();
+    const lockedBalance = await contract.staking.methods.lockedBalances(account).call({ from: account });
     console.log("locked deadline (timestamp)", lockedBalance.deadline);
     
     if (lockedBalance.deadline === "0") {
@@ -104,13 +104,13 @@ export default function Staking({contract, account}) {
   }
 
   async function getTotalSupply() {
-    let totalSupply = await contract.staking.methods.totalSupply().call();
+    let totalSupply = await contract.staking.methods.totalSupply().call({ from: account });
     console.log("totalSupply (wei)", totalSupply);
     setTotalSupply(convertFromWei(totalSupply));
   }
 
   async function getUserRewardBalance() {
-    const stakingRewardBalance = await contract.staking.methods.rewardsBalance(account).call();
+    const stakingRewardBalance = await contract.staking.methods.rewardsBalance(account).call({ from: account });
     console.log("staking reward balance (wei)", stakingRewardBalance);
     setUserStakingReward(convertFromWei(stakingRewardBalance));
   }
