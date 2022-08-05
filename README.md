@@ -3,9 +3,6 @@
 ### Lien Heroku
 https://vast-brook-64708.herokuapp.com/
 
-### Lien Github
-https://github.com/bropsten/DeFi-project
-
 ### Vidéo de présentation
 
 ### Objectifs
