@@ -1,6 +1,7 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import React, { useEffect, useState} from "react";
 import useWeb3 from "../hooks/useWeb3";
+import useEthPrice from "../hooks/useEthPrice";
 
 export default function Staking({contract, account}) {
 
@@ -14,6 +15,10 @@ export default function Staking({contract, account}) {
   const [lockedDeadline, setLockedDeadline] = useState(0);
   const [rewardPerTokenStored, setrewardPerTokenStored] = useState(0);
   const [stakingContract, setStakingContract] = useState(0);
+
+  const {priceEth} = useEthPrice();
+
+
 
 
   const projects = [
@@ -210,6 +215,8 @@ export default function Staking({contract, account}) {
           Staking Dashboard
         </h1>
         <p className="mt-5">Token BRO contract adress {broTokenAddress} </p>
+        <br></br>
+        <p className="mt-5">The ETH Price is {priceEth}</p>
 
         {/* <div className="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
           <div>
