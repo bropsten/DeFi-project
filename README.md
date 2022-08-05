@@ -4,10 +4,11 @@
 https://vast-brook-64708.herokuapp.com/
 
 ### Vidéo de présentation
-Presentation du front
+- Presentation du front
 https://www.loom.com/share/f4757782119e414ca6ed19267adf403f
 
-Presentation du back React part 1
+- Presentation du back React part 1
+https://www.loom.com/share/84406062c416474ead13c7661b3f8358
 
 
 ### Objectifs
