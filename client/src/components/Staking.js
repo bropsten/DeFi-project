@@ -316,9 +316,7 @@ export default function Staking({contract, account}) {
               Select the amount you want to stake
             </h3>
             <div className="mt-2 max-w-xl text-sm text-gray-500">
-              <p>
-                Change the email address you want associated with your account.
-              </p>
+              
             </div>
             <div className="mt-5 sm:flex sm:items-center">
               <div className="w-full sm:max-w-xs">
@@ -375,9 +373,7 @@ export default function Staking({contract, account}) {
             Select the amount you want to withdraw
           </h3>
           <div className="mt-2 max-w-xl text-sm text-gray-500">
-            <p>
-              Change the email address you want associated with your account.
-            </p>
+           
           </div>
           <div className="mt-5 sm:flex sm:items-center">
           <div className="w-full sm:max-w-xs">
@@ -411,9 +407,7 @@ export default function Staking({contract, account}) {
               Select the amount you want to withdraw
             </h3>
             <div className="mt-2 max-w-xl text-sm text-gray-500">
-              <p>
-                Change the email address you want associated with your account.
-              </p>
+             
             </div>
             <div className="mt-5 sm:flex sm:items-center">
               <div className="w-full sm:max-w-xs">
