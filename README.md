@@ -4,6 +4,11 @@
 https://vast-brook-64708.herokuapp.com/
 
 ### Vidéo de présentation
+Presentation du front
+https://www.loom.com/share/f4757782119e414ca6ed19267adf403f
+
+Presentation du back React part 1
+
 
 ### Objectifs
 - [x] Staker un ou plusieurs ERC20 dans des pools de cet ERC20
