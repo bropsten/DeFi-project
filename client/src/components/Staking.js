@@ -1,6 +1,7 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import React, { useEffect, useState} from "react";
 import useWeb3 from "../hooks/useWeb3";
+import useEthPrice from "../hooks/useEthPrice";
 
 export default function Staking({contract, account}) {
 
@@ -15,15 +16,19 @@ export default function Staking({contract, account}) {
   const [rewardPerTokenStored, setrewardPerTokenStored] = useState(0);
   const [stakingContract, setStakingContract] = useState(0);
 
+  const {priceEth} = useEthPrice();
+
+
+
 
   const projects = [
-    { name: 'Your token amount staked', initials: 'TaS', amount: userStakedBalance, bgColor: 'bg-pink-600', token: 'BROtoken' },
-    { name:"Your locked tokens amount staked" , initials: 'LaS', amount:userLockedBalance , bgColor: 'bg-purple-600' , token: 'BROtoken' },
+    { name: 'Your token amount staked', initials: 'TaS', amount: userStakedBalance, bgColor: 'bg-pink-600', token: 'BROtoken', dollarsPrice : userStakedBalance * priceEth + " $"},
+    { name:"Your locked tokens amount staked" , initials: 'LaS', amount:userLockedBalance , bgColor: 'bg-purple-600' , token: 'BROtoken' , dollarsPrice : userLockedBalance * priceEth + " $"},
     { name: "Your tokens will be unlock the", initials: 'WbU', amount:lockedDeadline , bgColor: 'bg-yellow-500'},
-    { name: "Your BROToken Wallet Balance", initials: 'WbU', amount:userBROTokenBalance , bgColor: 'bg-red-500', token: 'BROtoken'},
-    { name: "Total supply :" , initials: 'TS', amount: totalSupply, bgColor: 'bg-blue-500', token: 'BROtoken'},
-    { name: "Your staking reward :" , initials: 'YsR', amount: userStakingReward, bgColor: 'bg-green-500', token: 'BROtoken' },
-    { name: "Reward per token stored :" , initials: 'RpT', amount: rewardPerTokenStored, bgColor: 'bg-red-500', token: 'BROtoken' },
+    { name: "Your BROToken Wallet Balance", initials: 'WbU', amount:userBROTokenBalance , bgColor: 'bg-red-500', token: 'BROtoken', dollarsPrice : userBROTokenBalance * priceEth + " $"},
+    { name: "Total supply :" , initials: 'TS', amount: totalSupply, bgColor: 'bg-blue-500', token: 'BROtoken', dollarsPrice : totalSupply * priceEth + " $"},
+    { name: "Your staking reward :" , initials: 'YsR', amount: userStakingReward, bgColor: 'bg-green-500', token: 'BROtoken', dollarsPrice : userStakingReward * priceEth + " $" },
+    { name: "Reward per token stored :" , initials: 'RpT', amount: rewardPerTokenStored, bgColor: 'bg-red-500', token: 'BROtoken', dollarsPrice : rewardPerTokenStored * priceEth + " $"},
   ]
 
 
@@ -51,7 +56,7 @@ export default function Staking({contract, account}) {
       getTotalSupply();
     });
 
-    setStakingContract(contract.staking);
+    setStakingContract(contract.staking._address);
     setBroTokenAddress(contract.BROToken._address);
     updateInfos();
   }, [contract, account]);
@@ -209,21 +214,11 @@ export default function Staking({contract, account}) {
         <h1 className="text-2xl font-semibold text-gray-900">
           Staking Dashboard
         </h1>
-        <p className="mt-5">Token BRO contract adress {broTokenAddress} </p>
-
-        {/* <div className="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
-          <div>
-            <ul className="mt-1 max-w-2xl text-blue-sm text-gray-500">
-              <li>Your tokens amount staked : {userStakedBalance}</li>
-              <li>Your locked tokens amount staked : {userLockedBalance}</li>
-              <li>Your tokens will be unlock the {lockedDeadline}</li>
-              <li>Your BROtoken wallet balance : {userBROTokenBalance} </li>
-              <li>Total supply : {totalSupply}</li>
-              <li>Your staking reward : {userStakingReward} </li>
-              <li>Reward per token stored : {rewardPerTokenStored} </li>
-            </ul>
-          </div>
-        </div> */}
+        <p className="mt-5">BROToken contract address :<span className="font-bold"> {broTokenAddress} </span></p>
+        <p className="mt-5">The contract staking address is :<span className="font-bold">{stakingContract}</span> </p> 
+        <p className="mt-5">The DAI / USD pair (from Chainlink) : <span className="font-bold">{priceEth} $</span></p>
+        <p className="mt-5">One BRO Token equal (from Chainlink): <span className="font-bold">{priceEth/2} </span></p> 
+        
       </div>
 
 
@@ -245,6 +240,7 @@ export default function Staking({contract, account}) {
                     {project.name}
                 
                   <p className="mt-2 text-black-500 font-semibold">{project.amount} <span className="font-normal text-blue-500">{project.token}</span></p>
+                  <p>{project.dollarsPrice} </p>
                 </div>  
               </div>
             </li>

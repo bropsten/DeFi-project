@@ -23,8 +23,8 @@ https://www.loom.com/share/fae72c49c8044d829e80329505373939
 - [ ] Pouvoir créer à la volée des pools de liquidités par paires
 - [x] Récompenser l'utilisateur de la manière que l'on souhaite (token de récompense, minté pour les récompenses sur l'ensemble de pools)
 - [x] Calculer de manière logique la récompense reçue par l'utilisateur (temps dans la pool, part dans l'ensemble des pools, quantité retirée, ...). Faire des maths
-- [ ] Calculer la valeur des assets stakés (part dans l'ensemble des pools) à la même unité de valeur, en stable ou en ETH.
-- [ ] Pour les ERC20 créés, définir un taux de change arbitraire, pour les ERC20 pré existants, utiliser un Oracle pour trouver leurs valeurs face à l'ETH ou un stablecoin
+- [x] Calculer la valeur des assets stakés (part dans l'ensemble des pools) à la même unité de valeur, en stable ou en ETH.
+- [x] Pour les ERC20 créés, définir un taux de change arbitraire, pour les ERC20 pré existants, utiliser un Oracle pour trouver leurs valeurs face à l'ETH ou un stablecoin
 ___
 
 ## Récupérer le projet
