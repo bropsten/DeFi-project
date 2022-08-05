@@ -67,31 +67,31 @@ export default function Staking({contract, account}) {
   }
 
   async function getUserStakedBalance() {
-    const stakedBalance = await contract.staking.methods.balances(account).call();
+    const stakedBalance = await contract.staking.methods.balances(account).call({ from: account });
     console.log("staked balance (wei)", stakedBalance);
     setUserStakedBalance(convertFromWei(stakedBalance));
   }
 
   async function getUserLockedStakedBalance() {
-    const lockedBalance = await contract.staking.methods.lockedBalances(account).call();
+    const lockedBalance = await contract.staking.methods.lockedBalances(account).call({ from: account });
     console.log("locked balance (wei)", lockedBalance.balance);
     setuserLockedBalance(convertFromWei(lockedBalance.balance));
   }
 
   async function getUserBROTokenBalance() {
-    const BROBalance = await contract.BROToken.methods.balanceOf(account).call();
+    const BROBalance = await contract.BROToken.methods.balanceOf(account).call({ from: account });
     console.log("reward balance (wei)", BROBalance);
     setuserBROTokenBalance(convertFromWei(BROBalance));
   }
 
   async function getRewardPerTokenStored() {
-    const rewardPerToken = await contract.staking.methods.rewardPerTokenStored().call();
+    const rewardPerToken = await contract.staking.methods.rewardPerTokenStored().call({ from: account });
     console.log("reward per token stored", rewardPerToken);
     setrewardPerTokenStored(convertFromWei(rewardPerToken));
   }
 
   async function getUnlockDeadline() {
-    const lockedBalance = await contract.staking.methods.lockedBalances(account).call();
+    const lockedBalance = await contract.staking.methods.lockedBalances(account).call({ from: account });
     console.log("locked deadline (timestamp)", lockedBalance.deadline);
     
     if (lockedBalance.deadline === "0") {
@@ -104,13 +104,13 @@ export default function Staking({contract, account}) {
   }
 
   async function getTotalSupply() {
-    let totalSupply = await contract.staking.methods.totalSupply().call();
+    let totalSupply = await contract.staking.methods.totalSupply().call({ from: account });
     console.log("totalSupply (wei)", totalSupply);
     setTotalSupply(convertFromWei(totalSupply));
   }
 
   async function getUserRewardBalance() {
-    const stakingRewardBalance = await contract.staking.methods.rewardsBalance(account).call();
+    const stakingRewardBalance = await contract.staking.methods.rewardsBalance(account).call({ from: account });
     console.log("staking reward balance (wei)", stakingRewardBalance);
     setUserStakingReward(convertFromWei(stakingRewardBalance));
   }
@@ -190,6 +190,18 @@ export default function Staking({contract, account}) {
     }
   }
 
+  async function compound() {
+    try {
+      const transaction = await contract.staking.methods.claimReward().send({ from: account });
+      const rewards = transaction.events.RewardsClaimed.returnValues.amount;
+      await contract.BROToken.methods.approve(contract.staking._address, rewards).send({ from: account });
+      await contract.staking.methods.stake(rewards, false).send({ from: account });
+      updateInfos();
+    } catch (err) {
+      console.log("compound", err)
+    }
+  }
+
   return (
     <>
 
@@ -259,12 +271,14 @@ export default function Staking({contract, account}) {
                 <div className="-mx-2 -my-1.5 flex">
                   <button
                     type="button"
+                    onClick={claimReward}
                     className="mr-5 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                   >
                     Claim my reward
                   </button>
                   <button
                     type="button"
+                    onClick={compound}
                     className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                   >
                     Compound my reward
