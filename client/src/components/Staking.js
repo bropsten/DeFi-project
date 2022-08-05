@@ -215,9 +215,9 @@ export default function Staking({contract, account}) {
           Staking Dashboard
         </h1>
         <p className="mt-5">BROToken contract address :<span className="font-bold"> {broTokenAddress} </span></p>
-        <p className="mt-5">The contract staking address is :<span className="font-bold">{stakingContract}</span> </p> 
+        <p className="mt-5"><a href={`https://ropsten.etherscan.io/address/${stakingContract}`} target="blank"><span className="text-blue-600 font-semibold">The contract staking address is : </span></a><span className="font-bold">{stakingContract}</span> </p> 
         <p className="mt-5">The DAI / USD pair (from Chainlink) : <span className="font-bold">{priceEth} $</span></p>
-        <p className="mt-5">One BRO Token equal (from Chainlink): <span className="font-bold">{priceEth/2} </span></p> 
+        <p className="mt-5">One BRO Token equal (from Chainlink) : <span className="font-bold">{priceEth/2} </span></p> 
         
       </div>
 
