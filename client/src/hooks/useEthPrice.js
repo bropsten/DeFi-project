@@ -61,11 +61,15 @@ export default function useContract(){
     ];
     const addr = "0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF";
     const priceFeed = new web3.eth.Contract(aggregatorV3InterfaceABI, addr);
+
     priceFeed.methods
       .latestRoundData()
       .call()
       .then((roundData) => {
-        setPriceEth(roundData[3]);
+
+        let dataPriceEth = roundData.answer / Math.pow(10,8);
+        console.log(dataPriceEth);
+        setPriceEth(dataPriceEth);
       });
 
 
