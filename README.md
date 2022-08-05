@@ -72,7 +72,7 @@ Contract: staking
 ___
       
 ### CHAINLINK Pair used in the project
-The DAI / USD pair
+The DAI / USD contract pair
 Rinkeby : 0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF
 
 ___
