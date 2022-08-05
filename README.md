@@ -68,6 +68,11 @@ Contract: staking
       √ Should return the number of token rewarded after 1 day (1084ms, 88468 gas)
     Test de la fonction claimReward
       √ Should return the number of token rewarded after 1 day (864ms, 102609 gas)
+      
+### Chainlink Pair used in the project
+The DAI / USD pair
+Rinkeby : 0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF
+
 
 ### ETH Gas Reporter
 
